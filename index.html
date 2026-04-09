@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentFlow - Dental Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: 'var(--primary-50)',
+                            100: 'var(--primary-100)',
+                            200: 'var(--primary-200)',
+                            300: 'var(--primary-300)',
+                            400: 'var(--primary-400)',
+                            500: 'var(--primary-500)',
+                            600: 'var(--primary-600)',
+                            700: 'var(--primary-700)',
+                            800: 'var(--primary-800)',
+                            900: 'var(--primary-900)',
+                        }
+                    },
+                    spacing: {
+                        'card': 'var(--card-padding)',
+                    },
+                    borderRadius: {
+                        'custom': 'var(--btn-radius)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @property --sidebar-start { syntax: '<color>'; initial-value: #0f172a; inherits: false; }
+        @property --sidebar-end { syntax: '<color>'; initial-value: #1e293b; inherits: false; }
+        @property --body-bg { syntax: '<color>'; initial-value: #f8fafc; inherits: false; }
+        @property --primary-500 { syntax: '<color>'; initial-value: #0ea5e9; inherits: false; }
+        @property --card-bg { syntax: '<color>'; initial-value: #ffffff; inherits: false; }
+
+        :root {
+            --app-font-family: 'Inter', sans-serif;
+            --app-font-size: 16px;
+            --app-text-color: #0f172a;
+            --primary-500: #0ea5e9;
+            --card-padding: 1.5rem;
+            --btn-radius: 0.75rem;
+        }
+
+        html { font-size: var(--app-font-size); }
+
+        body {
+            font-family: var(--app-font-family);
+            color: var(--app-text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .sidebar-gradient-overlay {
+            background-image: linear-gradient(to bottom right, var(--sidebar-start), var(--sidebar-end));
+            transition: --sidebar-start 0.6s ease, --sidebar-end 0.6s ease, width 0.3s ease-in-out;
+        }
+
+        .main-body-transition {
+            background-color: var(--body-bg);
+            transition: --body-bg 0.6s ease, background-color 0.3s ease;
+            position: relative;
+        }
+
+        .card-surface-transition {
+            background-color: var(--card-bg) !important;
+            padding: var(--card-padding) !important;
+            transition: --card-bg 0.6s ease, padding 0.3s ease-in-out, border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .glass-active .card-surface-transition, 
+        .glass-active header {
+            background-color: rgba(255, 255, 255, 0.4) !important;
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dark.glass-active .card-surface-transition,
+        .dark.glass-active header {
+            background-color: rgba(15, 23, 42, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .dark .card-surface-transition { background-color: #0f172a !important; }
+        .dark body { color: #f1f5f9; --app-text-color: #f1f5f9; }
+
+        /* Button Personalty Styles */
+        .btn-style-gradient {
+            background-image: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            box-shadow: 0 4px 12px var(--primary-200);
+        }
+        .dark .btn-style-gradient { box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+
+        .btn-style-glow {
+            box-shadow: 0 0 15px var(--primary-500);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .btn-style-flat {
+            background-color: var(--primary-500);
+            box-shadow: none;
+        }
+
+        .custom-radius {
+            border-radius: var(--btn-radius);
+        }
+
+        /* Smooth scroll for all elements */
+        * { scroll-behavior: smooth; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react-redux": "https://esm.sh/react-redux@^9.2.0",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@reduxjs/toolkit": "https://esm.sh/@reduxjs/toolkit@^2.11.2",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+    "recharts": "https://esm.sh/recharts@^3.7.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-slate-50 h-screen overflow-hidden">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
