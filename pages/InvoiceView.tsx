@@ -108,7 +108,7 @@ const InvoiceView: React.FC = () => {
         {invoice.items && invoice.items.length > 0 && (
           <div className="border-b pb-4">
             <h3 className="font-semibold text-slate-600 mb-2">
-              Invoice Items
+              Lab's Products
             </h3>
 
             <table className="w-full text-left text-sm">

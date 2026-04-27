@@ -10,7 +10,9 @@ import medicinesReducer from '../slices/medicinesSlice';
 import authReducer from '../slices/authSlice';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; 
-import invoiceReducer from '../slices/invoice'
+import invoiceReducer from '../slices/invoice';
+import labReducer from '../slices/lab';
+import labProductSlice from '../slices/labProduct'
 
 
 const rootReducer = combineReducers({
@@ -22,14 +24,17 @@ const rootReducer = combineReducers({
   // billing: billingReducer,
   invoices:invoiceReducer,
   medicines: medicinesReducer,
+  lab:labReducer,
+  labProduct:labProductSlice,
   auth: authReducer,
+
 });
 
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['ui','medicines','doctors','patients','prescriptions','invoices'], 
+  whitelist: ['ui','medicines','doctors','patients','prescriptions','invoices','lab','labProduct'], 
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

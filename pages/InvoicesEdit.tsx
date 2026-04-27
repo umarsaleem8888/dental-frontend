@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { addInvoice } from '@/slices/invoice';
-import { apiPut } from '@/utilz/endpoints';
+import { apiGet, apiPut } from '@/utilz/endpoints';
 import { showToast } from '@/components/Toast';
 import { Plus, Trash2, FilePlus, Loader2, ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateInvoice } from '@/slices/billingSlice';
+import Select from 'react-select';
 
 interface InvoiceItem {
   name: string;
@@ -75,6 +76,28 @@ const InvoiceEdit: React.FC = () => {
       setPrevious(invoiceToEdit);
     }
   }, [invoiceToEdit]);
+
+  ////
+
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const res = await apiGet(`${baseUrl}/labproducts/`);
+
+      const formatted = res?.data?.map((p: any) => ({
+        value: p._id,
+        label: p.name,
+        data: p,
+      }));
+
+      setOptions(formatted);
+    };
+
+    fetchProducts();
+  }, []);
+
+  ////
 
 
   // Reset type when patient changes
@@ -281,14 +304,13 @@ const InvoiceEdit: React.FC = () => {
                   />
                 </div>
 
-                <div className="space-y-4">
+                {/* <div className="space-y-4">
                   <label className="block text-sm font-medium text-slate-600">Invoice Items</label>
                   {formData.items.map((item, idx) => (
                     <div
                       key={idx}
                       className="flex flex-col md:flex-row gap-4 items-end bg-slate-50 rounded-xl p-4"
                     >
-                      {/* Item Name */}
                       <div className="flex-1">
                         <label className="block text-sm font-medium text-slate-600">
                           Item Name
@@ -300,8 +322,6 @@ const InvoiceEdit: React.FC = () => {
                           className="w-full p-2.5 rounded-lg bg-white border border-slate-200 mt-1 focus:ring-2 focus:ring-primary-500/20 outline-none"
                         />
                       </div>
-
-                      {/* Price */}
                       <div className="w-full md:w-32">
                         <label className="block text-sm font-medium text-slate-600">
                           Price
@@ -315,8 +335,6 @@ const InvoiceEdit: React.FC = () => {
                           className="w-full p-2.5 rounded-lg bg-white border border-slate-200 mt-1 focus:ring-2 focus:ring-primary-500/20 outline-none"
                         />
                       </div>
-
-                      {/* Quantity */}
                       <div className="w-full md:w-28">
                         <label className="block text-sm font-medium text-slate-600">
                           Qty
@@ -330,8 +348,6 @@ const InvoiceEdit: React.FC = () => {
                           className="w-full p-2.5 rounded-lg bg-white border border-slate-200 mt-1 focus:ring-2 focus:ring-primary-500/20 outline-none"
                         />
                       </div>
-
-                      {/* Remove */}
                       <div className="flex items-center pb-1">
                         <button
                           type="button"
@@ -350,11 +366,135 @@ const InvoiceEdit: React.FC = () => {
                   >
                     <Plus size={18} /> Add Item
                   </button>
+                </div> */}
+
+                <div className="space-y-4">
+                  <label className="block text-sm font-medium text-slate-600">
+                    Lab Products
+                  </label>
+
+                  {formData.items?.map((item: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className="flex flex-col md:flex-row gap-4 items-end bg-slate-50 rounded-xl p-4"
+                    >
+                      {/* Product Selector */}
+                      <div className="flex-1">
+                        <label className="block text-sm font-medium text-slate-600">
+                          Product Name
+                        </label>
+
+                        <Select
+                          options={options}
+                          value={
+                            options.find(
+                              (opt: any) =>
+                                String(opt.value) === String(item.productId || item._id || item.id)
+                            ) || {
+                              label: item.name,
+                              value: item.productId,
+                            }
+                          }
+                          onChange={(selected: any) => {
+                            const updated = [...formData.items];
+
+                            updated[idx] = {
+                              ...updated[idx],
+                              productId: selected.value,
+                              name: selected.data.name,
+                              price: selected.data.price,
+                              lab: selected.data.lab,
+                            };
+
+                            setFormData({
+                              ...formData,
+                              items: updated,
+                            });
+                          }}
+                          placeholder="Search..."
+                          isSearchable
+                        />
+                      </div>
+
+                      {/* Price */}
+                      <div className="w-full md:w-32">
+                        <label className="block text-sm font-medium text-slate-600">
+                          Price
+                        </label>
+
+                        <input
+                          disabled
+                          value={item.price}
+                          className="w-full p-2.5 rounded-lg bg-white border"
+                        />
+                      </div>
+
+                      {/* Qty */}
+                      <div className="w-full md:w-28">
+                        <label className="block text-sm font-medium text-slate-600">
+                          Qty
+                        </label>
+
+                        <input
+                          type="number"
+                          min={1}
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const updated = [...formData.items];
+                            updated[idx].quantity = +e.target.value;
+
+                            setFormData({
+                              ...formData,
+                              items: updated,
+                            });
+                          }}
+                          className="w-full p-2.5 rounded-lg bg-white border"
+                        />
+                      </div>
+
+                      {/* Remove */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = formData.items.filter(
+                            (_: any, i: number) => i !== idx
+                          );
+
+                          setFormData({
+                            ...formData,
+                            items: updated,
+                          });
+                        }}
+                        className="p-2 rounded-lg hover:bg-rose-100 transition"
+                      >
+                        <Trash2 className="text-rose-500" size={18} />
+                      </button>
+                      {/* /// */}
+
+                      {/* <div className="flex items-center pb-1">
+                        <button
+                          type="button"
+                          onClick={() => removeItem(idx)}
+                       
+                        >
+                        
+                        </button>
+                      </div> */}
+
+                      {/* /// */}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addItem}
+                    className="flex items-center gap-2 text-primary-600 mt-2"
+                  >
+                    <Plus size={18} /> Add Lab's Products
+                  </button>
                 </div>
+
               </>
             )}
-
-            {/* Paid Amount */}
             <div>
               <label className="block text-sm font-medium text-slate-600 mt-4">
                 Amount Paid
@@ -486,7 +626,7 @@ const InvoiceEdit: React.FC = () => {
             {formData.items.length > 0 && (
               <div className="space-y-2 border-b border-slate-200 dark:border-slate-700 pb-3">
                 <p className="text-xs font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider">
-                  Invoice Items
+                  Lab Products
                 </p>
                 {formData.items.map((item, idx) => (
                   <div key={idx} className="flex justify-between items-center text-sm text-slate-600 dark:text-slate-300">

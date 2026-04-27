@@ -69,11 +69,13 @@ import {
   LogOut,
   Loader2,
   Loader,
-  ReceiptText
+  ReceiptText,
+  FlaskConical,
+  Package 
 } from 'lucide-react';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { apiPost } from '@/utilz/endpoints';
-import Loading from '@/components/loading';
+// import Loading from '@/components/loading';
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -225,6 +227,7 @@ const MainLayout: React.FC = () => {
 
   const pathnames = location.pathname.split('/').filter((x) => x);
   const navItems = [
+
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/medicines', label: 'Medicines', icon: Pill },
     { path: '/doctors', label: 'Doctors', icon: Stethoscope },
@@ -232,8 +235,10 @@ const MainLayout: React.FC = () => {
     { path: '/appointments', label: 'Appointments', icon: Calendar },
     { path: '/prescriptions', label: 'Prescriptions', icon: FileText },
     { path: '/Invoices', label: 'Invoices' , icon: ReceiptText },
-    // { path: '/billing', label: 'Billing', icon: CreditCard },
-    { path: '/analysis', label: 'Analysis', icon: BarChart3 },
+    { path: '/lab', label: 'Labs' , icon: FlaskConical },
+    // { path: '/products', label: 'LabProducts', icon: Package  },
+    // { path: '/analysis', label: 'Analysis', icon: BarChart3 },
+
   ];
 
   const getButtonStyleClass = () => {
@@ -435,9 +440,9 @@ const MainLayout: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <button className={`p-2 text-slate-500 hover:bg-white/40 dark:hover:bg-slate-800/40 relative transition-all active:scale-95 border border-transparent hover:border-white/20 ${getHeaderIconRadius()}`}>
+              {/* <button className={`p-2 text-slate-500 hover:bg-white/40 dark:hover:bg-slate-800/40 relative transition-all active:scale-95 border border-transparent hover:border-white/20 ${getHeaderIconRadius()}`}>
                 <Bell size={20} />
-              </button>
+              </button> */}
               <button
                 onClick={() => setIsSettingsOpen(true)}
                 className={`p-2 text-slate-500 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all active:scale-95 group border border-transparent hover:border-white/20 ${getHeaderIconRadius()}`}

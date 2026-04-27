@@ -127,7 +127,7 @@ const PrescriptionForm: React.FC = () => {
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Create Prescription</h2>
+            <h2 className="text-3xl font-bold tracking-tight">Create Prescription </h2>
             <p className="text-slate-500">Formulate treatment plan, medications and procedures.</p>
           </div>
         </div>

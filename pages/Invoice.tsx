@@ -284,9 +284,9 @@ const Invoices: React.FC = () => {
                                             <Link to={`/invoices/edit/${inv?.id}`} className="p-2 hover:text-amber-500">
                                                 <Edit2 color='#a5b1c3' size={18} />
                                             </Link>
-                                            <Link to={`/invoices/edit/${inv?.id}`} className="p-2 hover:text-primary-500">
+                                            {/* <Link to={`/invoices/edit/${inv?.id}`} className="p-2 hover:text-primary-500">
                                                 <ExternalLink color='#a5b1c3' size={18} />
-                                            </Link>
+                                            </Link> */}
                                             <Link to={`/invoices/view/${inv?.id}`} className="p-2 hover:text-primary-500">
                                                 <Eye color='#a5b1c3' size={18} />
                                             </Link>

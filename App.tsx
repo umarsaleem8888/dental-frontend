@@ -35,6 +35,14 @@ import InvoiceEdit from './pages/InvoicesEdit';
 import InvoiceView from './pages/InvoiceView';
 import PatientProfileFullView from './pages/PatientProfileFullView';
 
+import Lab from './pages/Lab';
+import LabForm from './pages/LabForm';
+import LabEdit from './pages/LabEdit';
+
+import LabProducts from './pages/LabProducts';
+import LabProductsEdit from './pages/LabProductsEdit';
+import LabProductsForm from './pages/LabProductsForm';
+
 // Protected Route Component
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -100,11 +108,20 @@ const App: React.FC = () => {
         <Route path="billing/edit/:id" element={<BillingEdit />} />
         <Route path="analysis" element={<Analysis />} />
         <Route path="invoices" element={ <Invoices/> }/>
+
         <Route path="invoices/new" element={ <InvoiceForm/> }/>
         <Route path="invoices/edit/:id" element={ <InvoiceEdit/> }/>
         <Route path="invoices/view/:id" element={ <InvoiceView/> }/>
         <Route path="patient/view/:id" element={ <PatientProfileFullView/> }/>
-        
+
+        <Route path="lab" element={ <Lab/> }/>
+        <Route path="labs/new" element={ <LabForm/> }/>
+        <Route path="lab/edit/:id" element={ <LabEdit/> }/>
+
+        <Route path="products/:id" element={ <LabProducts/> }/>
+        <Route path="Products/new" element={ <LabProductsForm/> }/>
+        <Route path="products/edit/:id" element={ <LabProductsEdit/> }/>
+
       </Route>
 
       <Route path="*" element={<Navigate to="/dashboard" />} />
