@@ -6,7 +6,7 @@ import { Search, Plus, Trash2, Pill, Edit2 } from 'lucide-react';
 import { addMedicine, deleteMedicine, emptyMedicine } from '../slices/medicinesSlice';
 import { apiGet, apiDelete } from '@/utilz/endpoints';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import Loading from '@/components/loading';
+import Loading from '../components/Loading';
 import { showToast } from '@/components/Toast';
 
 interface Medicine {
@@ -274,6 +274,7 @@ const MedicinesComponent: React.FC = () => {
         onConfirm={handleDelete}
         title="Delete"
         subtitle="Delete this medicine from the catalog?"
+        button={''}
       />
     </>
   );
