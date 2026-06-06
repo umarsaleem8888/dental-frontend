@@ -30,7 +30,7 @@ const AppointmentEdit: React.FC = () => {
     try {
       if (formData.id) {
 
-        const d = await apiPut<any[]>('/m', formData.id);
+        const d = await apiPut('/m', formData.id);
 
         if (d) {
           dispatch(updateAppointment(formData as Appointment));

@@ -275,7 +275,7 @@ const MainLayout: React.FC = () => {
     })
   };
 
-  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string | null }>({
+  const [deleteModal, setDeleteModal] = useState<any>({
     isOpen: false,
     id: null
   });

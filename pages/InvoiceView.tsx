@@ -12,7 +12,7 @@ const InvoiceView: React.FC = () => {
   const patients = useSelector((state: RootState) => state.patients.list);
   const doctors = useSelector((state: RootState) => state.doctors.list);
 
-  const invoice = invoices.find(inv => inv.id === id);
+  const invoice = invoices.find((inv:any) => inv.id === id);
 
   if (!invoice) {
     return (
@@ -34,7 +34,7 @@ const InvoiceView: React.FC = () => {
   /** ---------------- CALCULATIONS (ADDED ONLY) ---------------- */
   const itemsTotal =
     invoice?.items?.reduce(
-      (sum, i) => sum + i.quantity * i.price,
+      (sum:any, i:any) => sum + i.quantity * i.price,
       0
     ) || 0;
 
@@ -121,7 +121,7 @@ const InvoiceView: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {invoice.items.map((item, idx) => (
+                {invoice.items.map((item:any, idx:any) => (
                   <tr key={idx} className="border-b last:border-none">
                     <td className="py-2">{item.name}</td>
                     <td className="py-2">{item.quantity}</td>

@@ -15,7 +15,7 @@ const MedicineForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   // Single Entry State
-  const [singleData, setSingleData] = useState<Partial<Medicine>>({
+  const [singleData, setSingleData] = useState({
     name: '',
     category: 'Antibiotic',
     price: 0,
@@ -96,7 +96,7 @@ const MedicineForm: React.FC = () => {
 
     try {
       const lines = bulkText.split('\n').filter(l => l.trim() !== '');
-      const payload = [];
+      const payload = [] as any;
 
       for (const line of lines) {
         const parts = line.split(',').map(p => p.trim());

@@ -7,10 +7,10 @@ import { addAppointment } from '../slices/appointmentsSlice';
 import { Appointment } from '../types';
 import { ArrowLeft, Calendar, Save, User, Stethoscope, Clock, Zap, Loader2 } from 'lucide-react';
 import { apiPost, apiGet } from '@/utilz/endpoints';
-import Loading from '../components/loading';
+import Loading from '../components/Loading';
 import { showToast } from '../components/Toast';
 import Select from "react-select";
-import Modal from 'react-modal';
+// import Modal from 'react-modal';
 
 const AppointmentForm: React.FC = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const AppointmentForm: React.FC = () => {
   const patients = useSelector((state: RootState) => state.patients.list);
   const doctors = useSelector((state: RootState) => state.doctors.list);
 
-  const [formData, setFormData] = useState<Partial<Appointment>>({
+  const [formData, setFormData] = useState({
     patientId: '',
     doctorId: doctors[0]?.id || '',
     date: new Date().toISOString().split('T')[0],
@@ -33,7 +33,7 @@ const AppointmentForm: React.FC = () => {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalShift, setModalShift] = useState();
+  const [modalShift, setModalShift] = useState<any>();
   const [customSlotStart, setCustomSlotStart] = useState();
   const [customSlotEnd, setCustomSlotEnd] = useState();
 
@@ -54,7 +54,7 @@ const AppointmentForm: React.FC = () => {
 
   /* ---------------- DOCTOR OPTIONS ---------------- */
 
-  const doctorOptions = doctors.map((d) => ({
+  const doctorOptions = doctors.map((d:any) => ({
     value: d.id,
     label: d.status === 'Inactive' ? `${d.name} (Leave)` : d.name,
     isDisabled: d.status === 'Inactive',
@@ -77,9 +77,9 @@ const AppointmentForm: React.FC = () => {
 
         /* GROUP SLOTS BY DAY */
 
-        const groupedSlots = res?.map((day) => ({
+        const groupedSlots = res?.map((day:any) => ({
           label: day.day,
-          options: day.slots.map((slot) => ({
+          options: day.slots.map((slot:any) => ({
             label: `${slot.from} - ${slot.to} ${slot.status === 'FULL' ? '(Full)' : ''
               }`,
             value: `${slot.from}-${slot.to}`,
@@ -112,12 +112,9 @@ const AppointmentForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.slotStart || !formData.slotEnd) {
-      return showToast({
-        text: 'Please select a valid time slot',
-        type: 'warning',
-      });
-    }
+    // if (!formData.slotStart || !formData.slotEnd) {
+    //   return showToast({text: 'Please select a valid time slot',type: 'warning',});
+    // }
 
     try {
       setSubmitting(true);
@@ -213,7 +210,7 @@ const AppointmentForm: React.FC = () => {
     }),
   };
 
-  const openSlotModal = (shift) => {
+  const openSlotModal = (shift:any) => {
     setModalShift(shift);
     setCustomSlotStart(shift.from);
     setCustomSlotEnd(shift.to);
@@ -475,7 +472,7 @@ const AppointmentForm: React.FC = () => {
 
       </div>
 
-      <Modal
+      {/* <Modal
         isOpen={modalOpen}
         onRequestClose={() => setModalOpen(false)}
         contentLabel="Select Appointment Slot"
@@ -492,7 +489,7 @@ const AppointmentForm: React.FC = () => {
                 value={customSlotStart}
                 min={modalShift.from}
                 max={modalShift.to}
-                onChange={(e) => setCustomSlotStart(e.target.value)}
+                onChange={(e:any) => setCustomSlotStart(e.target.value)}
                 className="w-full border rounded-lg py-2 px-3 dark:bg-slate-800"
               />
             </div>
@@ -503,7 +500,7 @@ const AppointmentForm: React.FC = () => {
                 value={customSlotEnd}
                 min={customSlotStart}
                 max={modalShift.to}
-                onChange={(e) => setCustomSlotEnd(e.target.value)}
+                onChange={(e:any) => setCustomSlotEnd(e.target.value)}
                 className="w-full border rounded-lg py-2 px-3 dark:bg-slate-800"
               />
             </div>
@@ -515,7 +512,7 @@ const AppointmentForm: React.FC = () => {
         )}
 
 
-      </Modal>
+      </Modal> */}
 
     </>
   );

@@ -11,7 +11,7 @@ const BillingEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const existingInv = useSelector((state: RootState) => state.billing.list.find(inv => inv.id === id));
+  const existingInv = useSelector((state: any) => state.billing.list.find((inv:any) => inv.id === id));
 
   const [formData, setFormData] = useState<Partial<Invoice>>({});
 

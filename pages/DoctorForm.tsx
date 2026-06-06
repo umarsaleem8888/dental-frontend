@@ -26,7 +26,7 @@ const DoctorEdit: React.FC = () => {
 
   const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-  const [formData, setFormData] = useState<Partial<Doctor>>({
+  const [formData, setFormData] = useState({
     name: '',
     specialization: '',
     phone: '',
@@ -57,7 +57,7 @@ const DoctorEdit: React.FC = () => {
             phone: d.phone,
             email: d.email,
             status: d.status,
-            availability: DAYS.map(day => {
+            availability: DAYS?.map(day => {
               const dayData = d.availability.find((a: any) => a.day === day);
               return dayData
                 ? { day, isAvailable: dayData.isAvailable, slots: dayData.slots }

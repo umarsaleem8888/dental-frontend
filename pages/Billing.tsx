@@ -14,8 +14,8 @@ import ConfirmDialog from '../components/ConfirmDialog';
 
 const Billing: React.FC = () => {
   const dispatch = useDispatch();
-  const invoices = useSelector((state: RootState) => state.billing.list);
-  const patients = useSelector((state: RootState) => state.patients.list);
+  const invoices = useSelector((state: any) => state.billing.list);
+  const patients = useSelector((state: any) => state.patients.list);
 
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string | null }>({
     isOpen: false,
@@ -55,11 +55,11 @@ const Billing: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-              {invoices.map(inv => (
+              {invoices.map((inv:any)  => (
                 <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group">
                   <td className="px-6 py-4 font-bold text-sm">#{inv.id}</td>
                   <td className="px-6 py-4">
-                    <p className="font-bold text-sm">{patients.find(p => p.id === inv.patientId)?.name || 'Unknown'}</p>
+                    <p className="font-bold text-sm">{patients.find((p:any) => p.id === inv.patientId)?.name || 'Unknown'}</p>
                     <p className="text-[10px] text-slate-400">{inv.date}</p>
                   </td>
                   <td className="px-6 py-4">
@@ -108,6 +108,7 @@ const Billing: React.FC = () => {
         onConfirm={handleDelete}
         title="Void Invoice?"
         subtitle="This will remove the billing record and cancel any outstanding dues. This action is recorded for audit purposes."
+         button={''}
       />
     </div>
   );

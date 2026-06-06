@@ -13,6 +13,7 @@ interface labProducts {
   name: string;
   quantity: number;
   price: number;
+  lab:any;
 }
 
 interface InvoiceFormData {
@@ -44,7 +45,7 @@ const InvoiceForm: React.FC = () => {
 
 
 
-  const [formData, setFormData] = useState<InvoiceFormData>({
+  const [formData, setFormData] = useState<any>({
     patientId: '',
     doctorId: '',
     checkupFee: 0,
@@ -80,36 +81,36 @@ const InvoiceForm: React.FC = () => {
   // Reset type when patient changes
   useEffect(() => {
     setInvoiceType('Checkup');
-    setFormData(prev => ({ ...prev, type: 'Checkup', checkupFee: 0, items: [] }));
+    setFormData((prev:any) => ({ ...prev, type: 'Checkup', checkupFee: 0, items: [] }));
   }, [formData.patientId]);
 
   // Add / Update / Remove items
   const addItem = () =>
-    setFormData(prev => ({
+    setFormData((prev:any) => ({
       ...prev,
       items: [...prev.items, { name: '', quantity: 1, price: 0 }],
     }));
 
   const updateItem = (index: number, field: keyof labProducts, value: any) => {
-    const newItems = [...formData.items];
+    const newItems = [...formData.items] as any[];
     newItems[index][field] = value;
     setFormData({ ...formData, items: newItems });
   };
 
   const removeItem = (index: number) =>
-    setFormData({ ...formData, items: formData.items.filter((_, i) => i !== index) });
+    setFormData({ ...formData, items: formData.items.filter((_:any, i:any) => i !== index) });
 
   // Handle Previous Due mode
   const handlePrevDueMode = () => {
     setInvoiceType('PreviousDue');
-    setFormData(prev => ({ ...prev, type: 'PreviousDue', checkupFee: 0, items: [] }));
+    setFormData((prev:any) => ({ ...prev, type: 'PreviousDue', checkupFee: 0, items: [] }));
   };
 
   // Total & remaining calculations
   const totalAmount =
     invoiceType === 'PreviousDue'
       ? 0
-      : formData.items.reduce((sum, i) => sum + i.quantity * i.price, 0) + formData.checkupFee;
+      : formData.items.reduce((sum:any, i:any) => sum + i.quantity * i.price, 0) + formData.checkupFee;
 
   const remainingAmount = totalAmount - formData.paidAmount;
   const walletRemaining = walletPrev + formData.paidAmount - totalAmount;
@@ -138,7 +139,7 @@ const InvoiceForm: React.FC = () => {
 
 
 
-  const fetchBalance = async (id) => {
+  const fetchBalance = async (id:any) => {
     try {
       setBalanceLoading(true);
       const patientId = id;
@@ -222,12 +223,12 @@ const InvoiceForm: React.FC = () => {
       const FormData = {
         ...formData,
 
-        items: formData.items.map((item) => ({
+        items: formData.items.map((item:any) => ({
           name: item.name,
           price: item.price,
           quantity: item.quantity,
           productId: item.productId,
-          labId: item.lab?._id, 
+          labId: item.lab?._id,
           labName: item.lab?.name,
         })),
       };
@@ -292,7 +293,7 @@ const InvoiceForm: React.FC = () => {
     }
   };
 
-  const handleSelectPatient = async (e) => {
+  const handleSelectPatient = async (e:any) => {
     try {
       setFormData({ ...formData, patientId: e.target.value })
       const balance = await fetchBalance(e.target.value);
@@ -384,7 +385,7 @@ const InvoiceForm: React.FC = () => {
                   <label className="block text-sm font-medium text-slate-600">
                     Lab Products
                   </label>
-                  {formData?.items?.map((item, idx) => (
+                  {formData?.items?.map((item:any, idx:any) => (
                     <div
                       key={idx}
                       className="flex flex-col md:flex-row gap-4 items-end bg-slate-50 rounded-xl p-4"
@@ -402,7 +403,7 @@ const InvoiceForm: React.FC = () => {
                         /> */}
                         <Select
                           options={options}
-                          value={options.find(opt => opt.value === item.productId) || null}
+                          value={options.find((opt:any) => opt.value === item.productId) || null}
                           onChange={(selected: any) => {
                             updateItem(idx, "productId", selected.value);
                             updateItem(idx, "name", selected.data.name);
@@ -590,7 +591,7 @@ const InvoiceForm: React.FC = () => {
                 <p className="text-xs font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider">
                   Lab Products
                 </p>
-                {formData.items.map((item, idx) => (
+                {formData.items.map((item:any, idx:any) => (
                   <div key={idx} className="flex justify-between items-center text-sm text-slate-600 dark:text-slate-300">
                     <p>{item.name} x {item.quantity}</p>
                     <p>${(item.price * item.quantity).toFixed(2)}</p>

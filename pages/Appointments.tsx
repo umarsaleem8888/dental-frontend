@@ -26,7 +26,7 @@ const Appointments: React.FC = () => {
     const confirmed = confirm('Delete this appointment?');
     if (!confirmed) return;
 
-     const d = await apiDelete<any[]>(`/m:/${deleteModal.id}`);
+     const d = await apiDelete(`/m:/${deleteModal.id}`);
 
      if(d){
        dispatch(deleteAppointment(deleteModal.id));
@@ -131,6 +131,7 @@ const Appointments: React.FC = () => {
         onConfirm={handleDelete}
         title="Cancel Appointment?"
         subtitle="This will remove the session from the clinic schedule. The patient should be notified of this cancellation."
+        button={''}
       />
     </div>
   );

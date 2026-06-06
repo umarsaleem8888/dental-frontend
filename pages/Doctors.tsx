@@ -8,7 +8,7 @@ import { addDoctor, deleteDoctor, emptyDoctor } from '../slices/doctorsSlice';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { apiDelete, apiGet } from '@/utilz/endpoints';
 import { showToast } from '@/components/Toast';
-import Loading from '@/components/loading';
+import Loading from '../components/Loading';
 
 const Doctors: React.FC = () => {
   const dispatch = useDispatch();
@@ -45,7 +45,7 @@ const Doctors: React.FC = () => {
         const data = await fetchDoctz();
 
         if (data) {
-          data?.forEach((m) => dispatch(addDoctor(m)));
+          data?.forEach((m:any) => dispatch(addDoctor(m)));
           setLoading(false);
         }
 
@@ -182,6 +182,7 @@ const Doctors: React.FC = () => {
         onConfirm={handleDelete}
         title="Remove Staff Member?"
         subtitle="This will remove the doctor from the directory. Active appointments linked to this doctor may need rescheduling."
+         button={''}
       />
     </div>
   );

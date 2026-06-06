@@ -8,6 +8,7 @@ interface ConfirmDialogProps {
   onConfirm: () => void;
   title: string;
   subtitle: string;
+  button: string | any;
 }
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ isOpen, onClose, onConfirm, title, subtitle, button }) => {

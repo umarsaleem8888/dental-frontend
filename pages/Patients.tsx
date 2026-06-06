@@ -16,7 +16,7 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import { apiDelete, apiGet, apiPost } from '@/utilz/endpoints';
 import { showToast } from '@/components/Toast';
 import PatientFilter from '@/components/PatientFilters';
-import Loading from '@/components/loading';
+import Loading from '../components/Loading';
 
 const Patients: React.FC = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -115,7 +115,7 @@ const Patients: React.FC = () => {
       try {
         setLoading(true);
         const data = await fetchPatients();
-        data?.forEach((m) => dispatch(addPatient(m)));
+        data?.forEach((m:any) => dispatch(addPatient(m)));
       } catch (error) {
         console.error(error);
       } finally {
@@ -267,6 +267,7 @@ const Patients: React.FC = () => {
         onConfirm={handleDelete}
         title="Delete Patient Record?"
         subtitle="This will permanently remove the patient profile and all linked history. This action cannot be undone."
+         button={''}
       />
     </div>
   );

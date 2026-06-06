@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Search, Package, Trash2, Edit2, ArrowLeft, Loader2 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import Loading from "@/components/loading";
+import Loading from "../components/Loading";
 import { useDispatch, useSelector } from "react-redux";
 import { showToast } from "@/components/Toast";
 import { addlabPro, deletelabPro, emptylabPro, updatelabPro } from "@/slices/labProduct";
@@ -56,7 +56,7 @@ const LabProducts: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const openEditModal = (product: Product) => {
+  const openEditModal = (product: any) => {
 
 
     setEditingProduct(product);
@@ -422,6 +422,7 @@ const LabProducts: React.FC = () => {
           onConfirm={handleDelete}
           title="Delete Product?"
           subtitle="This will permanently remove the product."
+           button={''}
         />
 
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Trash2, Eye, Building2, Pencil, FlaskConical } from 'lucide-react';
 import { apiDelete, apiGet } from '@/utilz/endpoints'; // keep for future
-import Loading from '@/components/loading';
+import Loading from '../components/Loading';
 import { Link, useNavigate } from 'react-router-dom';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { addlab, deletelab, emptylab } from '@/slices/lab';
@@ -314,6 +314,7 @@ const Labs: React.FC = () => {
         onConfirm={handleDelete}
         title="Delete Lab?"
         subtitle="This action will permanently remove the lab and all associated products."
+         button={''}
       />
     </div>
   );

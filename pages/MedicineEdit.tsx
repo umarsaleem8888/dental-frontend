@@ -7,14 +7,14 @@ import { updateMedicine } from '../slices/medicinesSlice';
 import { Medicine } from '../types';
 import { ArrowLeft, Save, Pill, Loader2 } from 'lucide-react';
 import { apiPost, apiPut } from '@/utilz/endpoints';
-import Loading from '@/components/loading';
+import Loading from '../components/Loading';
 import { showToast } from '@/components/Toast';
 
 const MedicineEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const existingMed = useSelector((state: any) => state.medicines.list.find(m => m.id === id || m._id == id));
+  const existingMed = useSelector((state: any) => state.medicines.list.find((m:any) => m.id === id || m._id == id));
   const m = useSelector((state: RootState) => state.medicines);
 
 
@@ -51,7 +51,7 @@ const MedicineEdit: React.FC = () => {
           return;
         }
 
-    if (Number.isNaN(Number(formData?.price)) || formData?.price <= 0) {
+    if (Number.isNaN(Number(formData?.price)) || (formData?.price && formData?.price <= 0)) {
       showToast({
         text: "Price should be a number and greater than 0",
         type: "info",

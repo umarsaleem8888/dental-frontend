@@ -258,11 +258,11 @@ const PatientProfileFullView: React.FC = () => {
         setDeleteModal({ isOpen: false, id: null, type: null });
     };
 
-    const handleInvoiceLink = (link) => {
+    const handleInvoiceLink = (link:any) => {
         navigate(link);
     }
 
-    const handletimeCard=(item)=>{
+    const handletimeCard=(item:any)=>{
 
         var link ;
         
@@ -711,8 +711,8 @@ const PatientProfileFullView: React.FC = () => {
                                     ) : (
                                         (() => {
                                             // Filter history based on date range
-                                            const filteredHistory = balance?.history?.filter(h =>
-                                                isDateInRange(h.createdAt || h.date, 'billing')
+                                            const filteredHistory = balance?.history?.filter((h:any) =>
+                                                isDateInRange(( h?.createdAt) || h?.date, 'billing')
                                             );
 
                                             if (!filteredHistory || filteredHistory.length === 0) {
@@ -728,8 +728,8 @@ const PatientProfileFullView: React.FC = () => {
                                                 )
                                             }
 
-                                            return filteredHistory?.map((h, idx, arr) => (
-                                                <div key={h._id} className="relative pl-8 pb-6">
+                                            return filteredHistory?.map((h:any, idx:any, arr:any) => (
+                                                <div key={h?._id} className="relative pl-8 pb-6">
 
                                                     {/* vertical line */}
                                                     {idx !== arr.length - 1 && (
@@ -758,38 +758,38 @@ const PatientProfileFullView: React.FC = () => {
                                                                 className={`text-sm font-medium ${h.changeAmount >= 0 ? 'text-emerald-600' : 'text-rose-600'
                                                                     }`}
                                                             >
-                                                                {h.changeAmount >= 0 ? '+' : ''}
-                                                                {h.changeAmount}
+                                                                {h?.changeAmount >= 0 ? '+' : ''}
+                                                                {h?.changeAmount}
                                                             </span>
                                                         </div>
 
                                                         <div className="grid grid-cols-2 gap-3 mt-3 text-sm text-slate-600 dark:text-slate-300">
                                                             <div>
                                                                 <span className="text-slate-400 dark:text-slate-400">Previous Balance</span>
-                                                                <div className="font-medium">{h.prevWalletBalance}</div>
+                                                                <div className="font-medium">{h?.prevWalletBalance}</div>
                                                             </div>
 
                                                             <div>
                                                                 <span className="text-slate-400 dark:text-slate-400">New Balance</span>
                                                                 <div className="font-semibold text-slate-800 dark:text-slate-200">
-                                                                    {h.newWalletBalance}
+                                                                    {h?.newWalletBalance}
                                                                 </div>
                                                             </div>
 
                                                             <div>
                                                                 <span className="text-slate-400 dark:text-slate-400">Total Bill</span>
-                                                                <div>{h.totalAmount}</div>
+                                                                <div>{h?.totalAmount}</div>
                                                             </div>
 
                                                             <div>
                                                                 <span className="text-slate-400 dark:text-slate-400">Paid</span>
-                                                                <div>{h.paidAmount}</div>
+                                                                <div>{h?.paidAmount}</div>
                                                             </div>
                                                         </div>
 
                                                         <div className="flex justify-between items-center mt-3 text-xs text-slate-400 dark:text-slate-500">
                                                             <span
-                                                                onClick={() => handleInvoiceLink(`/invoices/view/${h.invoiceId}`)}
+                                                                onClick={() => handleInvoiceLink(`/invoices/view/${h?.invoiceId}`)}
                                                                 className="cursor-pointer flex gap-2 items-center text-slate-500 transition-all duration-200 ease-out hover:text-blue-600 hover:scale-[1.02]"
                                                             >
                                                                 <p>Invoice :</p>
@@ -797,7 +797,7 @@ const PatientProfileFullView: React.FC = () => {
                                                                 <Link2 size={14} />
                                                             </span>
 
-                                                            <span>{new Date(h.createdAt).toLocaleString()}</span>
+                                                            <span>{new Date(h?.createdAt).toLocaleString()}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -823,6 +823,7 @@ const PatientProfileFullView: React.FC = () => {
                         ? "This will permanently remove the medical instructions and diagnosis from the patient record. This action cannot be undone."
                         : "This will remove the billing record and cancel any outstanding dues. This action is recorded for audit purposes."
                 }
+                 button={''}
             />
         </div>
     );

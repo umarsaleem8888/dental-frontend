@@ -27,7 +27,7 @@ const DoctorEdit: React.FC = () => {
 
   const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-  const [formData, setFormData] = useState<Partial<Doctor>>({
+  const [formData, setFormData] = useState({
     name: '',
     specialization: '',
     phone: '',
@@ -37,13 +37,14 @@ const DoctorEdit: React.FC = () => {
       day,
       isAvailable: false,
       slots: [],
-    })) as Availability[],
+    // })) as Availability[],
+    })) as any,
   });
 
   const [loading, setLoading] = useState(false);
   const [activeDayModal, setActiveDayModal] = useState<string | null>(null);
   const [slotErrors, setSlotErrors] = useState<Record<number, string>>({});
-  const [allDoc , setAllDoc]=useState(useSelector((state)=> state.doctors.list) || []);
+  const [allDoc , setAllDoc]=useState(useSelector((state:any)=> state.doctors.list) || []);
 
  
   
@@ -57,7 +58,7 @@ const DoctorEdit: React.FC = () => {
         setLoading(true);
         // const d = await apiGet(`/doctors/${id}`);
 
-        const d = allDoc.find((d)=> d.id == id );
+        const d = allDoc.find((d:any)=> d.id == id );
         console.log('d : ',d);
         
         if (d) {

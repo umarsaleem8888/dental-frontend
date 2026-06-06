@@ -39,7 +39,9 @@ const Analysis: React.FC = () => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) =>
+                    `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
+                  }
                   outerRadius={120}
                   fill="#8884d8"
                   dataKey="count"
@@ -63,9 +65,9 @@ const Analysis: React.FC = () => {
               <BarChart data={doctorPerformance} layout="vertical" margin={{ left: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
                 <XAxis type="number" hide />
-                <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-                <Tooltip 
-                  cursor={{fill: 'transparent'}}
+                <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                <Tooltip
+                  cursor={{ fill: 'transparent' }}
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
                 />
                 <Bar dataKey="revenue" fill="#0ea5e9" radius={[0, 10, 10, 0]} barSize={40} />
@@ -76,39 +78,39 @@ const Analysis: React.FC = () => {
 
         {/* Growth Table */}
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-           <h3 className="font-bold text-lg mb-6">Patient Retention Metrics</h3>
-           <div className="overflow-x-auto">
-             <table className="w-full text-left">
-               <thead>
-                 <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 text-xs font-bold uppercase tracking-widest">
-                   <th className="py-4 px-2">Metric</th>
-                   <th className="py-4 px-2">Current Period</th>
-                   <th className="py-4 px-2">Previous Period</th>
-                   <th className="py-4 px-2">Growth</th>
-                 </tr>
-               </thead>
-               <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                 <tr>
-                   <td className="py-4 px-2 font-bold">New Patients</td>
-                   <td className="py-4 px-2">124</td>
-                   <td className="py-4 px-2">98</td>
-                   <td className="py-4 px-2 text-emerald-500 font-bold">+26.5%</td>
-                 </tr>
-                 <tr>
-                   <td className="py-4 px-2 font-bold">Follow-up Rate</td>
-                   <td className="py-4 px-2">68%</td>
-                   <td className="py-4 px-2">72%</td>
-                   <td className="py-4 px-2 text-rose-500 font-bold">-4.0%</td>
-                 </tr>
-                 <tr>
-                   <td className="py-4 px-2 font-bold">Average Invoice Value</td>
-                   <td className="py-4 px-2">$450</td>
-                   <td className="py-4 px-2">$390</td>
-                   <td className="py-4 px-2 text-emerald-500 font-bold">+15.3%</td>
-                 </tr>
-               </tbody>
-             </table>
-           </div>
+          <h3 className="font-bold text-lg mb-6">Patient Retention Metrics</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 text-xs font-bold uppercase tracking-widest">
+                  <th className="py-4 px-2">Metric</th>
+                  <th className="py-4 px-2">Current Period</th>
+                  <th className="py-4 px-2">Previous Period</th>
+                  <th className="py-4 px-2">Growth</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+                <tr>
+                  <td className="py-4 px-2 font-bold">New Patients</td>
+                  <td className="py-4 px-2">124</td>
+                  <td className="py-4 px-2">98</td>
+                  <td className="py-4 px-2 text-emerald-500 font-bold">+26.5%</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-2 font-bold">Follow-up Rate</td>
+                  <td className="py-4 px-2">68%</td>
+                  <td className="py-4 px-2">72%</td>
+                  <td className="py-4 px-2 text-rose-500 font-bold">-4.0%</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-2 font-bold">Average Invoice Value</td>
+                  <td className="py-4 px-2">$450</td>
+                  <td className="py-4 px-2">$390</td>
+                  <td className="py-4 px-2 text-emerald-500 font-bold">+15.3%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

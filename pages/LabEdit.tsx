@@ -33,9 +33,9 @@ const LabEdit: React.FC = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
   const dispatch = useDispatch();
 
-  const existingLab = useSelector((state: RootState) => state.lab.list.find(p => p.id === id));
+  const existingLab = useSelector((state: RootState) => state.lab.list.find((p: any) => p.id === id)) as any ;
 
-  console.log("existingLab :", existingLab);
+  // console.log("existingLab :", existingLab);
 
 
 
@@ -156,7 +156,7 @@ const LabEdit: React.FC = () => {
 
 
       // navi("/labs");
-    } catch (err) {
+    } catch (err: any) {
 
       const message = err?.response?.data?.message || "Something went wrong";
 
@@ -188,7 +188,7 @@ const LabEdit: React.FC = () => {
 
       <div>
 
-  <div className=" max-w-3xl mx-auto  flex items-center ">
+        <div className=" max-w-3xl mx-auto  flex items-center ">
           <button onClick={() => navi(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
             <ArrowLeft size={20} />
           </button>
@@ -197,11 +197,11 @@ const LabEdit: React.FC = () => {
             <p className="text-slate-500">Update record for {existingLab?.name}</p>
           </div>
         </div>
-      
+
 
         <div className="mt-8 max-w-3xl mx-auto p-6 bg-white dark:bg-slate-900 rounded-2xl shadow-md border">
 
- 
+
 
           {/* <h2 className="text-2xl font-bold mb-6">Edit Lab</h2> */}
 
@@ -297,21 +297,21 @@ const LabEdit: React.FC = () => {
               </button> */}
 
               {/* <div style={{border:'solid 1px green'}} className=" p-8 bg-slate-50 dark:bg-slate-800/50 flex justify-end gap-3"> */}
-                <button type="submit" className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg active:scale-95 transition-all">
-                  {/* <Save size={18} /> Update Patient */}
+              <button type="submit" className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg active:scale-95 transition-all">
+                {/* <Save size={18} /> Update Patient */}
 
-                  {
-                    loading ?
-                      <div className="w-full flex items-center justify-center animate-in fade-in duration-500">
-                        <Loader2 color={'#0ea5e9'} size={25} />
-                      </div>
-                      :
-                      <>
-                        <Save size={18} /> Update Patient
-                      </>
-                  }
+                {
+                  loading ?
+                    <div className="w-full flex items-center justify-center animate-in fade-in duration-500">
+                      <Loader2 color={'#0ea5e9'} size={25} />
+                    </div>
+                    :
+                    <>
+                      <Save size={18} /> Update Patient
+                    </>
+                }
 
-                </button>
+              </button>
               {/* </div> */}
 
               <button

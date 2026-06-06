@@ -8,7 +8,7 @@ import { addPrescription, deletePrescription, emptyPrescription } from '../slice
 import ConfirmDialog from '../components/ConfirmDialog';
 import { apiDelete, apiGet, apiPost } from '@/utilz/endpoints';
 import { showToast } from '@/components/Toast';
-import Loading from '@/components/loading';
+import Loading from '../components/Loading';
 
 const DateModal: React.FC<{
   isOpen: boolean;
@@ -425,6 +425,7 @@ const Prescriptions: React.FC = () => {
           onConfirm={handleDelete}
           title="Delete Prescription?"
           subtitle="This will permanently remove the medical instructions and diagnosis from the record. Historical charts will be lost."
+           button={''}
         />
 
         {/* Date modal */}

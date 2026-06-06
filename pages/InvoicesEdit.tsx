@@ -10,6 +10,7 @@ import { updateInvoice } from '@/slices/billingSlice';
 import Select from 'react-select';
 
 interface InvoiceItem {
+  productId:any;
   name: string;
   quantity: number;
   price: number;
@@ -33,8 +34,8 @@ const InvoiceEdit: React.FC = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
 
   const invoices = useSelector((state: any) => state.invoices.list);
-  const patients = useSelector((state: RootState) => state.patients.list);
-  const doctors = useSelector((state: RootState) => state.doctors.list);
+  const patients = useSelector((state: any) => state.patients.list);
+  const doctors = useSelector((state: any) => state.doctors.list);
 
   const invoiceToEdit = invoices.find((inv: any) => inv.id === id);
 
@@ -44,7 +45,7 @@ const InvoiceEdit: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Online' | 'Card' | 'Other'>('Cash');
   const [prev, setPrevious] = useState<any>({});
 
-  const [formData, setFormData] = useState<InvoiceFormData>({
+  const [formData, setFormData] = useState<any>({
     patientId: '',
     doctorId: '',
     checkupFee: 0,
@@ -106,7 +107,7 @@ const InvoiceEdit: React.FC = () => {
     if (invoiceToEdit) return;
 
     setInvoiceType('Checkup');
-    setFormData(prev => ({
+    setFormData((prev:any) => ({
       ...prev,
       type: 'Checkup',
       checkupFee: 0,
@@ -117,31 +118,31 @@ const InvoiceEdit: React.FC = () => {
 
   // Add / Update / Remove items
   const addItem = () =>
-    setFormData(prev => ({
+    setFormData((prev:any) => ({
       ...prev,
       items: [...prev.items, { name: '', quantity: 1, price: 0 }],
     }));
 
   const updateItem = (index: number, field: keyof InvoiceItem, value: any) => {
-    const newItems = [...formData.items];
+    const newItems = [...formData.items] as any;
     newItems[index][field] = value;
     setFormData({ ...formData, items: newItems });
   };
 
   const removeItem = (index: number) =>
-    setFormData({ ...formData, items: formData.items.filter((_, i) => i !== index) });
+    setFormData({ ...formData, items: formData.items.filter((_:any, i:any) => i !== index) });
 
   // Handle Previous Due mode
   const handlePrevDueMode = () => {
     setInvoiceType('PreviousDue');
-    setFormData(prev => ({ ...prev, type: 'PreviousDue', checkupFee: 0, items: [] }));
+    setFormData((prev:any) => ({ ...prev, type: 'PreviousDue', checkupFee: 0, items: [] }));
   };
 
   // Calculations
   const totalAmount =
     invoiceType === 'PreviousDue'
       ? 0
-      : formData.items.reduce((sum, i) => sum + i.quantity * i.price, 0) + formData.checkupFee;
+      : formData.items.reduce((sum:any, i:any) => sum + i.quantity * i.price, 0) + formData.checkupFee;
 
   const remainingAmount = totalAmount - formData.paidAmount;
   const walletRemaining = walletPrev + formData.paidAmount - totalAmount;
@@ -213,8 +214,8 @@ const InvoiceEdit: React.FC = () => {
       if (res) {
         const updatedInvoice = {
           ...res,
-          patient: patients.find(p => p.id === res.patientId) || {},
-          doctor: doctors.find(d => d.id === res.doctorId) || {},
+          patient: patients.find((p:any) => p.id === res.patientId) || {},
+          doctor: doctors.find((d:any) => d.id === res.doctorId) || {},
         };
         dispatch(updateInvoice(updatedInvoice));
 
@@ -264,7 +265,7 @@ const InvoiceEdit: React.FC = () => {
               className="w-full rounded-xl p-3 bg-slate-50 dark:bg-slate-800"
             >
               <option value="">Select Patient</option>
-              {patients?.map(p => (
+              {patients?.map((p:any) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
@@ -282,7 +283,7 @@ const InvoiceEdit: React.FC = () => {
                     className="w-full rounded-xl p-3 bg-slate-50 dark:bg-slate-800"
                   >
                     <option value="">Select Doctor</option>
-                    {doctors.map(d => (
+                    {doctors.map((d:any) => (
                       <option key={d.id} value={d.id}>
                         {d.name}
                       </option>
@@ -601,7 +602,7 @@ const InvoiceEdit: React.FC = () => {
               <div className="flex justify-between items-center">
                 <p className="text-sm text-slate-500 dark:text-slate-400">Patient</p>
                 <p className="font-medium text-slate-700 dark:text-slate-200">
-                  {patients.find(p => p.id === formData.patientId)?.name || '-'}
+                  {patients.find((p:any) => p.id === formData.patientId)?.name || '-'}
                 </p>
               </div>
               {invoiceType === 'Checkup' && (
@@ -609,7 +610,7 @@ const InvoiceEdit: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <p className="text-sm text-slate-500 dark:text-slate-400">Doctor</p>
                     <p className="font-medium text-slate-700 dark:text-slate-200">
-                      {doctors.find(d => d.id === formData.doctorId)?.name || '-'}
+                      {doctors.find((d:any) => d.id === formData.doctorId)?.name || '-'}
                     </p>
                   </div>
                   <div className="flex justify-between items-center">
@@ -628,7 +629,7 @@ const InvoiceEdit: React.FC = () => {
                 <p className="text-xs font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider">
                   Lab Products
                 </p>
-                {formData.items.map((item, idx) => (
+                {formData.items.map((item:any, idx:any) => (
                   <div key={idx} className="flex justify-between items-center text-sm text-slate-600 dark:text-slate-300">
                     <p>{item.name} x {item.quantity}</p>
                     <p>${(item.price * item.quantity).toFixed(2)}</p>

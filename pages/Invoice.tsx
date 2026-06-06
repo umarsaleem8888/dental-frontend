@@ -24,7 +24,7 @@ import {
 import ConfirmDialog from '../components/ConfirmDialog';
 import { apiDelete, apiGet, apiPost } from '@/utilz/endpoints';
 import { showToast } from '@/components/Toast';
-import Loading from '@/components/loading';
+import Loading from '../components/Loading';
 import InvoiceFilter from '@/components/InvoiceFilters';
 import InvoiceForm from './InvoiceForm';
 
@@ -104,8 +104,8 @@ const Invoices: React.FC = () => {
         // const res = await apiGet(`${baseUrl}/invoice/all/`);
 
         return res?.map((i: any) => {
-            const p = patients?.find(p => p?.id === i?.patientId);
-            const d = doctors.find(d => d?.id === i.doctorId);
+            const p = patients?.find((p:any) => p?.id === i?.patientId);
+            const d = doctors.find((d:any) => d?.id === i.doctorId);
 
             return {
                 id: i?._id,
@@ -353,6 +353,7 @@ const Invoices: React.FC = () => {
                 onConfirm={handleDelete}
                 title="Delete Invoice?"
                 subtitle="This action cannot be undone."
+                 button={''}
             />
         </div>
     );

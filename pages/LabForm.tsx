@@ -119,7 +119,7 @@ const LabForm: React.FC = () => {
       }
 
       // navi("/labs");
-    } catch (err) {
+    } catch (err:any) {
 
       const message = err?.response?.data?.message || "Something went wrong";
 
