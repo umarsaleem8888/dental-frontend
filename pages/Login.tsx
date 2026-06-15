@@ -74,7 +74,7 @@ const Login: React.FC = () => {
             <div className="w-14 h-14 bg-primary-600 rounded-2xl flex items-center justify-center text-white mx-auto shadow-lg shadow-primary-500/20 mb-4">
               <Stethoscope size={28} />
             </div>
-            <h1 className="text-2xl font-black tracking-tight">DentFlow Login</h1>
+            <h1 className="text-2xl font-black tracking-tight">DentalExpert Login</h1>
             <p className="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider">Clinical Access Portal</p>
           </div>
 
