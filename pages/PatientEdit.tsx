@@ -30,7 +30,9 @@ const PatientEdit: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData?.email || !formData?.name || !formData?.phone || !formData?.gender || !formData?.age || !formData?.bloodGroup) {
+    if (
+      // !formData?.email || 
+      !formData?.name || !formData?.phone || !formData?.gender || !formData?.age || !formData?.bloodGroup) {
 
       showToast({
         text: "empty fields not allowed",
