@@ -17,6 +17,7 @@ import { apiDelete, apiGet, apiPost } from '@/utilz/endpoints';
 import { showToast } from '@/components/Toast';
 import PatientFilter from '@/components/PatientFilters';
 import Loading from '../components/Loading';
+import { currency } from '@/utilz/currency';
 
 const Patients: React.FC = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -197,7 +198,7 @@ const Patients: React.FC = () => {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${patient?.balance >= 0 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30'}`}>
-                      {patient?.balance > 0 ? '+' : patient?.balance < 0 ? '-' : ''}${Math.abs(patient?.balance).toLocaleString()}
+                      {patient?.balance > 0 ? '+' : patient?.balance < 0 ? '-' : ''}{currency("PKR")}{Math.abs(patient?.balance).toLocaleString()}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">

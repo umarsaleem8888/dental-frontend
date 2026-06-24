@@ -11,6 +11,7 @@ import { addlabPro, deletelabPro, emptylabPro, updatelabPro } from "@/slices/lab
 import { apiDelete, apiGet, apiPost, apiPut } from "@/utilz/endpoints";
 import { RootState } from '../app/store';
 import { formatDate } from "@/utilz/formateDate";
+import { currency } from "@/utilz/currency";
 
 interface Product {
   // id: string;
@@ -101,6 +102,7 @@ const LabProducts: React.FC = () => {
         ////
 
         if (res) {
+          emptylabPro();
           dispatch(updatelabPro(data));
           showToast({
             text: "Updated successfully",
@@ -341,7 +343,8 @@ const LabProducts: React.FC = () => {
                   </td>
                   {/* <td className="px-6 py-4">{p.category}</td> */}
                   <td className="px-6 py-4 font-bold text-emerald-600">
-                    Rs. {p?.price}
+                    {currency("PKR")}
+                    {p?.price}
                   </td>
                   <td className="px-6 py-4"> {formatDate(p?.createdAt)}</td>
                   <td className="px-6 py-4 text-right">
@@ -422,7 +425,7 @@ const LabProducts: React.FC = () => {
           onConfirm={handleDelete}
           title="Delete Product?"
           subtitle="This will permanently remove the product."
-           button={''}
+          button={''}
         />
 
 

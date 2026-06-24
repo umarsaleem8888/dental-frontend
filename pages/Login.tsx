@@ -71,7 +71,7 @@ const Login: React.FC = () => {
       <div className="w-full max-w-[380px] relative z-10 animate-in fade-in zoom-in-95 duration-500">
         <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden p-8 space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-14 h-14 bg-primary-600 rounded-2xl flex items-center justify-center text-white mx-auto shadow-lg shadow-primary-500/20 mb-4">
+            <div className="w-14 h-14 bg-[#3b82f6] rounded-2xl flex items-center justify-center text-white mx-auto shadow-lg shadow-primary-500/20 mb-4">
               <Stethoscope size={28} />
             </div>
             <h1 className="text-2xl font-black tracking-tight">DentalExpert Login</h1>

@@ -233,7 +233,7 @@ const MedicineForm: React.FC = () => {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Unit Price ($)</label>
+                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Unit Price (PKR)</label>
                 <input
                   required
                   type="number"

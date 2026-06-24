@@ -10,6 +10,7 @@ import { ArrowLeft, PlusCircle, Trash2, FilePlus, Pill, Plus, Calendar, Clock, L
 import { apiPost } from '@/utilz/endpoints';
 import { showToast } from '@/components/Toast';
 import ImageViewer from "@/components/ImagePopUp";
+import { currency } from '@/utilz/currency';
 
 const PrescriptionForm: React.FC = () => {
 
@@ -442,7 +443,8 @@ const PrescriptionForm: React.FC = () => {
               <div className="flex justify-between items-end">
                 <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Total Medicines:</p>
                 <p className="text-2xl font-black text-emerald-600">
-                  ${formData?.medicines?.reduce((sum, med) => sum + (med.unitPrice * med.quantity), 0).toFixed(2)}
+                  {currency("PKR")}
+                  {formData?.medicines?.reduce((sum, med) => sum + (med.unitPrice * med.quantity), 0).toFixed(2)}
                 </p>
               </div>
             </div>

@@ -30,7 +30,8 @@ import {
   Calendar1,
   X,
   Expand,
-  MoveUpRight
+  MoveUpRight,
+  OctagonAlert 
 
 } from 'lucide-react';
 import { recordPayment, deleteInvoice } from '../slices/billingSlice';
@@ -40,6 +41,7 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import { apiGet } from '@/utilz/endpoints';
 import { showToast } from '@/components/Toast';
 import { formatDate, formatTime } from '@/utilz/formateDate';
+import { currency } from '@/utilz/currency';
 
 
 const PatientProfile: React.FC = () => {
@@ -252,11 +254,11 @@ const PatientProfile: React.FC = () => {
     setDeleteModal({ isOpen: false, id: null, type: null });
   };
 
-  const handleInvoiceLink = (link) => {
+  const handleInvoiceLink = (link:any) => {
     navigate(link);
   }
 
-  const handletimeCard = (item) => {
+  const handletimeCard = (item:any) => {
 
     var link;
 
@@ -323,7 +325,9 @@ const PatientProfile: React.FC = () => {
               <p className="text-[10px] font-black opacity-60 uppercase tracking-[0.2em] mb-4">Patient Ledger Balance</p>
               <div className="flex items-baseline gap-2">
 
-                <span className="text-2xl font-bold">$</span>
+                <span className="text-2xl font-bold">
+                  {currency('PKR')}
+                </span>
 
                 <h3 className={`text-6xl font-black tracking-tighter ${patient.balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                   }`}>
@@ -352,11 +356,11 @@ const PatientProfile: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
                 <p className="text-[10px] text-slate-400 font-black uppercase mb-1">Age</p>
-                <p className="font-bold">{patient.age} Yrs</p>
+                <p className="font-bold">{patient?.age} Yrs</p>
               </div>
               <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
                 <p className="text-[10px] text-slate-400 font-black uppercase mb-1">Blood</p>
-                <p className="font-bold text-rose-500 flex items-center gap-1">{patient.bloodGroup}</p>
+                <p className="font-bold text-rose-500 flex items-center gap-1">{patient?.bloodGroup}</p>
               </div>
             </div>
 
@@ -367,7 +371,7 @@ const PatientProfile: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Phone</p>
-                  <p className="text-sm font-bold">{patient.phone}</p>
+                  <p className="text-sm font-bold">{patient?.phone}</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -376,7 +380,9 @@ const PatientProfile: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Email</p>
-                  <p className="text-sm font-bold truncate">{patient.email}</p>
+                  <p className="text-sm font-bold truncate">{patient?.email || <span className='flex item-center justify-center' > {'No Email '} 
+                    {/* <OctagonAlert style={{size:'5px'}} />  */}
+                    </span>}</p>
                 </div>
               </div>
             </div>

@@ -71,7 +71,7 @@ import {
   Loader,
   ReceiptText,
   FlaskConical,
-  Package 
+  Package
 } from 'lucide-react';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { apiPost } from '@/utilz/endpoints';
@@ -234,8 +234,8 @@ const MainLayout: React.FC = () => {
     { path: '/patients', label: 'Patients', icon: Users },
     { path: '/appointments', label: 'Appointments', icon: Calendar },
     { path: '/prescriptions', label: 'Prescriptions', icon: FileText },
-    { path: '/Invoices', label: 'Invoices' , icon: ReceiptText },
-    { path: '/lab', label: 'Labs' , icon: FlaskConical },
+    { path: '/Invoices', label: 'Invoices', icon: ReceiptText },
+    { path: '/lab', label: 'Labs', icon: FlaskConical },
     // { path: '/products', label: 'LabProducts', icon: Package  },
     // { path: '/analysis', label: 'Analysis', icon: BarChart3 },
 
@@ -285,7 +285,7 @@ const MainLayout: React.FC = () => {
     handleLogout()
   }
 
-  
+
 
   const handleLayoutChange = async () => {
 
@@ -560,12 +560,97 @@ const MainLayout: React.FC = () => {
                     <Compass size={14} className="text-primary-500" /> Sidebar Personality
                   </h4>
                   <div className="grid grid-cols-3 gap-2">
-                    {PRESET_GRADIENTS.map(preset => (
-                      <button key={preset.name} onClick={() => dispatch(setSidebarGradient(preset))} className={`p-2 rounded-xl border-2 flex items-center gap-2 transition-all ${ui.sidebarGradient.start === preset.start ? 'border-primary-500 bg-primary-50/20' : 'border-slate-100 dark:border-slate-800'}`}>
-                        <div style={{ background: `linear-gradient(to bottom right, ${preset.start}, ${preset.end})` }} className="w-4 h-4 rounded shrink-0" />
-                        <span className="text-[9px] font-bold truncate">{preset.name}</span>
+                    {PRESET_GRADIENTS?.map((preset) => (
+                      <button
+                        key={preset.name}
+                        onClick={() => dispatch(setSidebarGradient(preset))}
+                        className={`p-2 rounded-xl border-2 flex items-center gap-2 transition-all ${ui.sidebarGradient.start === preset.start &&
+                          ui.sidebarGradient.end === preset.end
+                          ? "border-primary-500 bg-primary-50/20"
+                          : "border-slate-100 dark:border-slate-800"
+                          }`}
+                      >
+                        <div
+                          style={{
+                            background: `linear-gradient(to bottom right, ${preset.start}, ${preset.end})`,
+                          }}
+                          className="w-4 h-4 rounded shrink-0"
+                        />
+                        <span className="text-[9px] font-bold truncate">
+                          {preset.name}
+                        </span>
                       </button>
                     ))}
+                  </div>
+
+                  {/* Custom Gradient */}
+                  <div className="shadow-sm mt-4 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 bg-white/50 dark:bg-slate-900/50">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-semibold">Custom Gradient</h4>
+
+                      <div
+                        className="w-20 h-8 rounded-lg border border-slate-200 dark:border-slate-700"
+                        style={{
+                          background: `linear-gradient(135deg, ${ui.sidebarGradient.start}, ${ui.sidebarGradient.end})`,
+                        }}
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      {/* Start Color */}
+                      <div className="flex-1">
+                        <label className="text-xs text-slate-500 mb-2 block">
+                          Start Color
+                        </label>
+
+                        <div className="flex items-center gap-2 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
+                          <input
+                            type="color"
+                            value={ui.sidebarGradient.start}
+                            onChange={(e) =>
+                              dispatch(
+                                setSidebarGradient({
+                                  ...ui.sidebarGradient,
+                                  start: e.target.value,
+                                })
+                              )
+                            }
+                            className="w-8 h-8 rounded-full cursor-pointer border-none bg-transparent"
+                          />
+
+                          <span className="text-xs font-mono">
+                            {ui.sidebarGradient.start}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* End Color */}
+                      <div className="flex-1">
+                        <label className="text-xs text-slate-500 mb-2 block">
+                          End Color
+                        </label>
+
+                        <div className="flex items-center gap-2 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
+                          <input
+                            type="color"
+                            value={ui.sidebarGradient.end}
+                            onChange={(e) =>
+                              dispatch(
+                                setSidebarGradient({
+                                  ...ui.sidebarGradient,
+                                  end: e.target.value,
+                                })
+                              )
+                            }
+                            className="w-8 h-8 rounded-full cursor-pointer border-none bg-transparent"
+                          />
+
+                          <span className="text-xs font-mono">
+                            {ui.sidebarGradient.end}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -671,7 +756,7 @@ const MainLayout: React.FC = () => {
             <button
               onClick={handleLayoutChange}
               className="w-full bg-slate-900 dark:bg-primary-600 text-white font-black py-4 rounded-2xl hover:bg-black transition-all uppercase tracking-widest text-xs shadow-xl active:scale-95">
-              { loading ? <div className="w-full flex align-items justify-center" > <Loader2 style={{height:'16px',width:'16px'}} /> </div>  :"Save Visual Experience"} 
+              {loading ? <div className="w-full flex align-items justify-center" > <Loader2 style={{ height: '16px', width: '16px' }} /> </div> : "Save Visual Experience"}
             </button>
             {/* <button onClick={() => { if (confirm('Factory reset all UI customizations?')) dispatch(resetUI()); }} className="w-full py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 text-slate-400 hover:text-rose-500 hover:border-rose-200 transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest">
               <RotateCcw size={14} /> Factory Reset Theme

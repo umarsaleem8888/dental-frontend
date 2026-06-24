@@ -13,6 +13,7 @@ import {
 import StatCard from '../components/StatCard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Link } from 'react-router-dom';
+import { currency } from '@/utilz/currency';
 
 const Dashboard: React.FC = () => {
   const patients = useSelector((state: RootState) => state.patients.list);
@@ -50,10 +51,10 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard label="Total Patients" value={patients.length} icon={Users} trend="12%" trendType="up" color="bg-blue-500" />
-        <StatCard label="Today's Appointments" value={todayAppointments.length} icon={Calendar} trend="5%" trendType="up" color="bg-primary-500" />
-        <StatCard label="Monthly Revenue" value={`$${totalRevenue.toLocaleString()}`} icon={TrendingUp} trend="18%" trendType="up" color="bg-emerald-500" />
-        <StatCard label="Pending Invoices" value={`$${pendingRevenue.toLocaleString()}`} icon={AlertCircle} trend="2%" trendType="down" color="bg-amber-500" />
+        <StatCard label="Total Patients" value={patients.length} icon={Users} trend="12%" trendType="up" color="bg-[#CBD5E1]" />
+        <StatCard label="Today's Appointments" value={todayAppointments.length} icon={Calendar} trend="5%" trendType="up" color="bg-[#3b82f6]" />
+        <StatCard label="Monthly Revenue" value={`${currency('PKR')}${totalRevenue.toLocaleString()}`} icon={TrendingUp} trend="18%" trendType="up" color="bg-emerald-500" />
+        <StatCard label="Pending Invoices" value={`${currency('PKR')} ${pendingRevenue.toLocaleString()}`} icon={AlertCircle} trend="2%" trendType="down" color="bg-amber-500" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

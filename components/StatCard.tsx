@@ -11,7 +11,7 @@ interface StatCardProps {
   color?: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ label, value, icon: Icon, trend, trendType, color = 'bg-primary-500' }) => {
+const StatCard: React.FC<StatCardProps> = ({ label, value, icon: Icon, trend, trendType, color }) => {
   return (
     <div className="card-surface-transition rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:translate-y-[-4px] hover:shadow-lg">
       <div className="flex items-start justify-between">
@@ -26,7 +26,7 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon: Icon, trend, tr
           )}
         </div>
         <div className={`p-3 rounded-xl ${color} text-white bg-opacity-10 dark:bg-opacity-20 flex items-center justify-center`}>
-          <Icon size={24} className={color.replace('bg-', 'text-')} />
+          <Icon size={24} className={color?.replace('bg-', 'text-')} />
         </div>
       </div>
     </div>

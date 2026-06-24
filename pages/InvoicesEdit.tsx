@@ -8,6 +8,7 @@ import { Plus, Trash2, FilePlus, Loader2, ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateInvoice } from '@/slices/billingSlice';
 import Select from 'react-select';
+import { currency } from '@/utilz/currency';
 
 interface InvoiceItem {
   productId:any;
@@ -616,7 +617,8 @@ const InvoiceEdit: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <p className="text-sm text-slate-500 dark:text-slate-400">Checkup Fee</p>
                     <p className="font-medium text-slate-700 dark:text-slate-200">
-                      ${formData.checkupFee.toFixed(2)}
+                      {currency("PKR")}
+                      {formData.checkupFee.toFixed(2)}
                     </p>
                   </div>
                 </>
@@ -632,7 +634,9 @@ const InvoiceEdit: React.FC = () => {
                 {formData.items.map((item:any, idx:any) => (
                   <div key={idx} className="flex justify-between items-center text-sm text-slate-600 dark:text-slate-300">
                     <p>{item.name} x {item.quantity}</p>
-                    <p>${(item.price * item.quantity).toFixed(2)}</p>
+                    <p>
+                      {currency("PKR")}
+                      {(item.price * item.quantity).toFixed(2)}</p>
                   </div>
                 ))}
               </div>
@@ -642,16 +646,21 @@ const InvoiceEdit: React.FC = () => {
             <div className="space-y-2 border-b border-slate-200 dark:border-slate-700 pb-3">
               <div className="flex justify-between items-center">
                 <p className="text-sm text-slate-500 dark:text-slate-400">Today's Bill</p>
-                <p className="font-medium text-slate-700 dark:text-slate-200">${totalAmount.toFixed(2)}</p>
+                <p className="font-medium text-slate-700 dark:text-slate-200">
+                   {currency("PKR")}
+                  {totalAmount.toFixed(2)}</p>
               </div>
               <div className="flex justify-between items-center">
                 <p className="text-sm text-slate-500 dark:text-slate-400">Paid</p>
-                <p className="font-medium text-slate-700 dark:text-slate-200">${formData.paidAmount}</p>
+                <p className="font-medium text-slate-700 dark:text-slate-200">
+                   {currency("PKR")}
+                  {formData.paidAmount}</p>
               </div>
               <div className="flex justify-between items-center">
                 <p className="text-sm text-slate-500 dark:text-slate-400">Wallet Remaining</p>
                 <p className={`font-semibold ${walletRemaining < 0 ? 'text-rose-500' : 'text-emerald-600'}`}>
-                  ${walletRemaining.toFixed(2)}
+                   {currency("PKR")}
+                  {walletRemaining.toFixed(2)}
                 </p>
               </div>
             </div>

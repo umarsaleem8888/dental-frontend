@@ -16,7 +16,7 @@ const PatientForm: React.FC = () => {
 
   const baseUrl = import.meta.env.VITE_API_URL;
 
-  const [formData, setFormData] = useState<Partial<Patient>>({
+  const [formData, setFormData] = useState<any>({
     name: '',
     email: '',
     phone: '',
@@ -30,7 +30,9 @@ const PatientForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData?.email || !formData?.name || !formData?.phone || !formData?.gender || !formData?.age || !formData?.bloodGroup) {
+    if (
+      // !formData?.email ||
+       !formData?.name || !formData?.phone || !formData?.gender || !formData?.age || !formData?.bloodGroup) {
 
       showToast({
         text: "empty fields not allowed",
@@ -62,7 +64,7 @@ const PatientForm: React.FC = () => {
 
       if (m) {
 
-        console.log("m : ",m);
+        // console.log("m : ",m);
         
 
         const data = {
@@ -79,6 +81,7 @@ const PatientForm: React.FC = () => {
         }
 
         console.log("p data : ",data);
+        
         
 
         dispatch(addPatient(data));
@@ -135,11 +138,11 @@ const PatientForm: React.FC = () => {
                 <Mail size={14} /> Email Address
               </label>
               <input
-                required
+                // required
                 type="email"
                 placeholder="jonathan@example.com"
                 className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 outline-none focus:ring-2 focus:ring-primary-500/20 font-medium"
-                value={formData.email}
+                // value={'shazad2@gamil.com'}
                 onChange={e => setFormData({ ...formData, email: e.target.value })}
               />
             </div>

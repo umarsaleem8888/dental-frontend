@@ -90,7 +90,7 @@ const PatientEdit: React.FC = () => {
         </button>
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Edit Patient</h2>
-          <p className="text-slate-500">Update record for {existingPatient.name}</p>
+          <p className="text-slate-500">Update record for {existingPatient?.name}</p>
         </div>
       </div>
 
@@ -110,7 +110,8 @@ const PatientEdit: React.FC = () => {
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest text-slate-400">Email Address</label>
               <input
-                required
+                // required
+                placeholder='abc@gmail.com'
                 type="email"
                 className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 outline-none focus:ring-2 focus:ring-primary-500/20 font-medium"
                 value={formData?.email || ''}

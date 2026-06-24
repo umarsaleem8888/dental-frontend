@@ -9,6 +9,7 @@ import { ArrowLeft, Save, Pill, Loader2 } from 'lucide-react';
 import { apiPost, apiPut } from '@/utilz/endpoints';
 import Loading from '../components/Loading';
 import { showToast } from '@/components/Toast';
+import { currency } from '@/utilz/currency';
 
 const MedicineEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -132,7 +133,7 @@ const MedicineEdit: React.FC = () => {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-slate-400">Unit Price ($)</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-400">Unit Price (PKR)</label>
               <input required type="number" step="0.01" className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 outline-none focus:ring-2 focus:ring-primary-500/20 font-medium" value={formData.price || 0} onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) })} />
             </div>
           </div>

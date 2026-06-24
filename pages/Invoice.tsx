@@ -27,6 +27,7 @@ import { showToast } from '@/components/Toast';
 import Loading from '../components/Loading';
 import InvoiceFilter from '@/components/InvoiceFilters';
 import InvoiceForm from './InvoiceForm';
+import { currency } from '@/utilz/currency';
 
 const Invoices: React.FC = () => {
 
@@ -260,11 +261,13 @@ const Invoices: React.FC = () => {
 
 
                                     <td className="px-6 py-4 font-bold text-emerald-600">
-                                        ${inv?.paidAmount}
+                                        {currency('PKR')}
+                                        {inv?.paidAmount}
                                     </td>
 
                                     <td className="px-6 py-4 font-bold text-emerald-600">
-                                        ${inv?.totalAmount}
+                                        {currency('PKR')}
+                                        {inv?.totalAmount}
                                     </td>
 
                                     <td className="px-6 py-4">

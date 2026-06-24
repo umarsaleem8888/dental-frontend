@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Printer } from 'lucide-react';
+import { currency } from '@/utilz/currency';
 
 const InvoiceView: React.FC = () => {
   const { id } = useParams();
@@ -12,7 +13,7 @@ const InvoiceView: React.FC = () => {
   const patients = useSelector((state: RootState) => state.patients.list);
   const doctors = useSelector((state: RootState) => state.doctors.list);
 
-  const invoice = invoices.find((inv:any) => inv.id === id);
+  const invoice = invoices.find((inv: any) => inv.id === id);
 
   if (!invoice) {
     return (
@@ -34,7 +35,7 @@ const InvoiceView: React.FC = () => {
   /** ---------------- CALCULATIONS (ADDED ONLY) ---------------- */
   const itemsTotal =
     invoice?.items?.reduce(
-      (sum:any, i:any) => sum + i.quantity * i.price,
+      (sum: any, i: any) => sum + i.quantity * i.price,
       0
     ) || 0;
 
@@ -53,7 +54,7 @@ const InvoiceView: React.FC = () => {
   ).toFixed(2);
 
   const formatCurrency = (value: number | string) =>
-    `$${Number(value).toFixed(2)}`;
+    `${Number(value).toFixed(2)}`;
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 space-y-6">
@@ -121,7 +122,7 @@ const InvoiceView: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {invoice.items.map((item:any, idx:any) => (
+                {invoice.items.map((item: any, idx: any) => (
                   <tr key={idx} className="border-b last:border-none">
                     <td className="py-2">{item.name}</td>
                     <td className="py-2">{item.quantity}</td>
@@ -151,6 +152,9 @@ const InvoiceView: React.FC = () => {
           <div className="flex justify-between">
             <span className="text-slate-500">Items Total</span>
             <span className="font-medium">
+              {
+                currency("PkR")
+              }
               {formatCurrency(itemsTotal)}
             </span>
           </div>
@@ -158,6 +162,9 @@ const InvoiceView: React.FC = () => {
           <div className="flex justify-between">
             <span className="text-slate-500">Checkup Fee</span>
             <span className="font-medium">
+              {
+                currency("PkR")
+              }
               {formatCurrency(checkupFee)}
             </span>
           </div>
@@ -165,6 +172,9 @@ const InvoiceView: React.FC = () => {
           <div className="flex justify-between border-t pt-2 text-base">
             <span className="font-semibold">Total Amount</span>
             <span className="font-bold">
+              {
+                currency("PkR")
+              }
               {formatCurrency(totalAmount)}
             </span>
           </div>
@@ -172,13 +182,20 @@ const InvoiceView: React.FC = () => {
           <div className="flex justify-between">
             <span className="text-slate-500">Paid Amount</span>
             <span className="font-semibold">
+              {
+                currency("PkR")
+              }
               {formatCurrency(invoice.paidAmount)}
             </span>
           </div>
 
           <div className="flex justify-between">
             <span className="text-slate-500">Wallet Balance</span>
-            <span className="font-semibold">{walletRemaining}</span>
+            <span className="font-semibold">
+              {
+                currency("PkR")
+              }
+              {walletRemaining}</span>
           </div>
 
           <div className="flex justify-between">

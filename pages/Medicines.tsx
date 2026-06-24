@@ -8,6 +8,7 @@ import { apiGet, apiDelete } from '@/utilz/endpoints';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import Loading from '../components/Loading';
 import { showToast } from '@/components/Toast';
+import { currency } from '@/utilz/currency';
 
 interface Medicine {
   id: string;
@@ -204,7 +205,7 @@ const MedicinesComponent: React.FC = () => {
                     <td className="px-6 py-4 font-bold">{med?.name}</td>
                     <td className="px-6 py-4">{med?.category}</td>
                     <td className="px-6 py-4">{med?.type}</td>
-                    <td className="px-6 py-4">${med?.price.toFixed(2)}</td>
+                    <td className="px-6 py-4">{currency('PKR')} {med?.price.toFixed(2)}</td>
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => navigate(`/medicines/edit/${med?.id || med?._id}`)}
