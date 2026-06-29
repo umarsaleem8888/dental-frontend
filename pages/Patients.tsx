@@ -41,7 +41,8 @@ const Patients: React.FC = () => {
 
   const filteredPatients = patients.filter(p =>
     p?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p?.id?.toLowerCase().includes(searchTerm.toLowerCase())
+    p?.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p?.phone?.includes(searchTerm)
   );
 
   const totalPages = Math.ceil(filteredPatients.length / itemsPerPage);

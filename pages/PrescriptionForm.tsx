@@ -6,11 +6,13 @@ import { RootState } from '../app/store';
 import { addPrescription } from '../slices/prescriptionsSlice';
 import { Prescription, PrescribedMedicine } from '../types';
 import DentalChart from '../components/DentalChart';
-import { ArrowLeft, PlusCircle, Trash2, FilePlus, Pill, Plus, Calendar, Clock, Loader2 } from 'lucide-react';
+import { ArrowLeft, PlusCircle, Trash2, FilePlus, Pill, Plus, Calendar, Clock, Loader2, Eye } from 'lucide-react';
 import { apiPost } from '@/utilz/endpoints';
 import { showToast } from '@/components/Toast';
-import ImageViewer from "@/components/ImagePopUp";
+// import ImageViewer from "@/components/ImagePopUp";
 import { currency } from '@/utilz/currency';
+import Select from 'react-select';
+import ImageSlider from '../components/ImageSlider';
 
 const PrescriptionForm: React.FC = () => {
 
@@ -24,10 +26,33 @@ const PrescriptionForm: React.FC = () => {
   const doctors = useSelector((state: RootState) => state.doctors.list);
   const medicines = useSelector((state: RootState) => state.medicines.list);
 
-  const [xrayPreview, setXrayPreview] = useState<string>('');
-  const [xrayBinary, setXrayBinary] = useState<ArrayBuffer | null>(null);
-  const [xrayFile, setXrayFile] = useState<File | null>(null);
-  const [showImageModal, setShowImageModal] = useState(false);
+  const medicineOptions =
+    medicines?.map((m) => ({
+      value: m.id,
+      label: `${m.name} (${currency("PKR")} ${m.price.toFixed(2)})`,
+    })) || [];
+
+  // const [xrayPreview, setXrayPreview] = useState<string>('');
+  // const [xrayBinary, setXrayBinary] = useState<ArrayBuffer | null>(null);
+  // const [xrayFile, setXrayFile] = useState<File | null>(null);
+
+  const [xrayImages, setXrayImages] = useState<
+    {
+      file: File;
+      preview: string;
+      binary: ArrayBuffer;
+    }[]
+  >([]);
+
+  // const [showImageModal, setShowImageModal] = useState(false);
+
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const openViewer = (index: number) => {
+    setCurrentImageIndex(index);
+    setViewerOpen(true);
+  };
 
   const [loading, setLoading] = useState(false);
 
@@ -54,7 +79,7 @@ const PrescriptionForm: React.FC = () => {
   };
 
   const addMedication = () => {
-    console.log(selectedMedId, 'selected Med Id');
+    // console.log(selectedMedId, 'selected Med Id');
 
     if (!selectedMedId) return;
     const med = medicines?.find(m => m?.id === selectedMedId);
@@ -128,25 +153,47 @@ const PrescriptionForm: React.FC = () => {
   /////////
 
   // ===============================
-  const handleXrayUpload = async (e: any) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // const handleXrayUpload = async (e: any) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    setXrayFile(file);
+  //   setXrayFile(file);
 
-    // preview for screen
-    const previewUrl = URL.createObjectURL(file);
-    setXrayPreview(previewUrl);
+  //   // preview for screen
+  //   const previewUrl = URL.createObjectURL(file);
+  //   setXrayPreview(previewUrl);
 
-    // binary for cloud / backend
-    const binary = await file.arrayBuffer();
-    setXrayBinary(binary);
+  //   // binary for cloud / backend
+  //   const binary = await file.arrayBuffer();
+  //   setXrayBinary(binary);
+  // };
+
+  const handleXrayUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(e.target.files || []);
+
+    if (!files.length) return;
+
+    const newImages = await Promise.all(
+      files.map(async (file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+        binary: await file.arrayBuffer(),
+      }))
+    );
+
+    setXrayImages((prev) => [...prev, ...newImages]);
   };
 
-  const removeXray = () => {
-    setXrayPreview('');
-    setXrayBinary(null);
-    setXrayFile(null);
+  ////
+
+  const removeXray = (index: number) => {
+    setXrayImages((prev) => {
+      URL.revokeObjectURL(prev[index].preview);
+
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   ////////////
@@ -193,16 +240,31 @@ const PrescriptionForm: React.FC = () => {
 
                 <div className="bg-slate-50 dark:bg-slate-800/40 p-6 rounded-2xl space-y-6">
                   <div className="flex gap-3">
-                    <select
+                    {/* <select
                       value={selectedMedId}
                       onChange={(e) => setSelectedMedId(e.target.value)}
                       className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 outline-none focus:ring-2 focus:ring-primary-500/20"
                     >
                       <option value="">Select Medicine from Catalog...</option>
                       {medicines?.map(m => (
-                        <option key={m.id} value={m.id}>{m.name} (${m.price.toFixed(2)})</option>
+                        <option key={m.id} value={m.id}>{m.name} ({currency("PKR")} {m.price.toFixed(2)})</option>
                       ))}
-                    </select>
+                    </select> */}
+                    {/* //// */}
+
+                    <div className="flex-1">
+                      <Select
+                        options={medicineOptions}
+                        value={medicineOptions.find(
+                          (option) => option.value === selectedMedId
+                        )}
+                        onChange={(option) => setSelectedMedId(option?.value || "")}
+                        placeholder="Search medicine..."
+                        isClearable
+                      />
+                    </div>
+
+                    {/* //// */}
                     <button
                       type="button"
                       onClick={addMedication}
@@ -213,7 +275,7 @@ const PrescriptionForm: React.FC = () => {
                   </div>
 
                   <div className="space-y-3">
-                    {formData.medicines?.map((med, idx) => (
+                    {formData?.medicines?.map((med, idx) => (
                       <div key={idx} className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm animate-in zoom-in-95">
                         <div className="flex justify-between items-start mb-4">
                           <div>
@@ -308,7 +370,7 @@ const PrescriptionForm: React.FC = () => {
 
                   {/* Remove Button */}
 
-                  {
+                  {/* {
                     xrayPreview &&
                     (
 
@@ -320,7 +382,7 @@ const PrescriptionForm: React.FC = () => {
                         Delete Image <Trash2 width={16} height={16} style={{ marginTop: '3px' }} />
                       </button>
                     )
-                  }
+                  } */}
 
 
                 </div>
@@ -336,37 +398,65 @@ const PrescriptionForm: React.FC = () => {
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={handleXrayUpload}
                       className="hidden"
                     />
                   </label>
 
                   {/* Preview */}
-                  {
-                    xrayPreview
-                    &&
-                    (
-                      <div className="relative w-full">
-                        <img
-                          src={xrayPreview}
-                          alt="Xray Preview"
-                          className="w-full h-72 object-cover rounded-2xl border border-slate-200 dark:border-slate-700"
-                        />
-                      </div>
-                    )}
+                  {xrayImages.length > 0 && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {xrayImages.map((img, index) => (
+                        <div
+                          key={index}
+                          className="relative border rounded-2xl overflow-hidden"
+                        >
+                          <img
+                            src={img.preview}
+                            alt={`Xray ${index}`}
+                            className="w-full h-48 object-cover"
+                          />
+
+                          <div className="absolute top-2 right-2 flex gap-2">
+                            {/* View */}
+                            <button
+                              type="button"
+                              onClick={() => openViewer(index)}
+                              className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow"
+                            >
+                              <Eye size={16} />
+                            </button>
+
+                            {/* Delete */}
+                            <button
+                              type="button"
+                              onClick={() => removeXray(index)}
+                              className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {
-                  xrayPreview && (
-                    // <button
-                    //   type="button"
-                    //   onClick={() => setShowImageModal(true)}
-                    //   className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold w-full"
-                    // >
-                    //   Preview Full Image
-                    // </button>
-                    <ImageViewer className={'bg-blue-600 text-white px-4 py-2 rounded-lg w-full' } buttonText={"Full Image Preview"} image={xrayPreview} />
-                  )
-                }
+
+
+                <ImageSlider
+                  open={viewerOpen}
+                  currentIndex={currentImageIndex}
+                  onClose={() => setViewerOpen(false)}
+                  images={xrayImages.map((img, i) => ({
+                    src: img.preview,
+                    title: `X-Ray ${i + 1}`,
+                  }))}
+                />
+
+                {/* //// */}
+
+                {/* ))} */}
               </section>
 
               {/* //////// */}

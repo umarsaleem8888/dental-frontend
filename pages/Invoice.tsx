@@ -256,7 +256,7 @@ const Invoices: React.FC = () => {
                                         {inv?.id}
                                     </td> */}
 
-                                    <td className="px-6 py-4">{inv?.patient?.name}</td>
+                                    <td className="px-6 py-4">{inv?.patient?.name || 'UnKown'}</td>
 
 
 
