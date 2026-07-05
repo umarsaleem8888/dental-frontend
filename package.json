@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-tooltip": "^1.2.11",
     "@reduxjs/toolkit": "^2.11.2",
     "axios": "^1.13.3",
     "jwt-decode": "^4.0.0",

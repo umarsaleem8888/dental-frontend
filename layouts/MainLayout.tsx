@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../app/store';
 import { logout } from '../slices/authSlice';
 import {
+  
   toggleTheme,
   toggleGlassMode,
   resetUI,
@@ -64,6 +65,7 @@ import {
   Sliders,
   Type as TypeIcon,
   RectangleHorizontal,
+
   Compass,
   Pill,
   LogOut,
@@ -71,7 +73,8 @@ import {
   Loader,
   ReceiptText,
   FlaskConical,
-  Package
+  Package,
+  UserLockIcon,
 } from 'lucide-react';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { apiPost } from '@/utilz/endpoints';
@@ -448,6 +451,13 @@ const MainLayout: React.FC = () => {
                 className={`p-2 text-slate-500 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all active:scale-95 group border border-transparent hover:border-white/20 ${getHeaderIconRadius()}`}
               >
                 <Settings size={20} className="group-hover:rotate-45 transition-transform duration-500" />
+              </button>
+
+               <button
+                onClick={() => navigate('/permission')}
+                className={`p-2 text-slate-500 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all active:scale-95 group border border-transparent hover:border-white/20 ${getHeaderIconRadius()}`}
+              >
+                <UserLockIcon size={20} className="group-hover:zoom-45 transition-transform duration-500" />
               </button>
 
               <div className="h-6 w-px bg-slate-300/30 dark:bg-slate-600/30 mx-1" />
