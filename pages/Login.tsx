@@ -147,7 +147,7 @@ const Login: React.FC = () => {
         </div>
 
         <p className="mt-6 text-center text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] opacity-50">
-          Secured by DentFlow Cloud
+          Secured by Dentel Expert Cloud
         </p>
       </div>
     </div>

@@ -153,6 +153,18 @@ const THEME_PRESETS = [
 const MainLayout: React.FC = () => {
 
 
+  const Hash = window.location.hash;
+  var pathName = false;
+
+  if(Hash == '#/permission'){
+    pathName = true;
+  }
+  else{
+    pathName = false;
+  }
+
+  // console.log(pathName,'- pathname')
+
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -364,7 +376,7 @@ const MainLayout: React.FC = () => {
         >
           {/* Sidebar Header */}
           <div className={`h-16 flex items-center ${ui.sidebarLayout.collapsed ? 'justify-center' : 'justify-between px-6'} border-b border-white/10 shrink-0`}>
-            {!ui.sidebarLayout.collapsed && <span className="text-2xl font-bold tracking-tighter truncate">DentFlow</span>}
+            {!ui.sidebarLayout.collapsed && <span className="font-['Protest_Riot'] text-2xl font-bold tracking-tighter truncate">Dental Expert</span>}
             <button
               onClick={() => dispatch(toggleSidebarCollapsed())}
               className={`p-2 rounded-lg hover:bg-white/10 transition-colors flex items-center justify-center shrink-0 ${ui.sidebarLayout.collapsed ? 'w-10 h-10' : ''}`}
@@ -429,7 +441,7 @@ const MainLayout: React.FC = () => {
         <main className="flex-1 flex flex-col overflow-hidden relative">
           <header
             style={headerStyle}
-            className="h-16 flex items-center justify-between px-8 backdrop-blur-md shrink-0 z-30 transition-all duration-500"
+            className="h-16  flex items-center justify-between px-8 backdrop-blur-md shrink-0 z-20 transition-all duration-500"
           >
             <div className="flex items-center gap-6 flex-1 max-w-xl">
               <div className="flex items-center gap-2 text-sm font-medium">
@@ -443,9 +455,6 @@ const MainLayout: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              {/* <button className={`p-2 text-slate-500 hover:bg-white/40 dark:hover:bg-slate-800/40 relative transition-all active:scale-95 border border-transparent hover:border-white/20 ${getHeaderIconRadius()}`}>
-                <Bell size={20} />
-              </button> */}
               <button
                 onClick={() => setIsSettingsOpen(true)}
                 className={`p-2 text-slate-500 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all active:scale-95 group border border-transparent hover:border-white/20 ${getHeaderIconRadius()}`}
@@ -457,7 +466,7 @@ const MainLayout: React.FC = () => {
                 onClick={() => navigate('/permission')}
                 className={`p-2 text-slate-500 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all active:scale-95 group border border-transparent hover:border-white/20 ${getHeaderIconRadius()}`}
               >
-                <UserLockIcon size={20} className="group-hover:zoom-45 transition-transform duration-500" />
+                <UserLockIcon size={20} className={`text-${ pathName ? 'blue-500 ' : '' } group-hover:zoom-45 transition-transform duration-500`} />
               </button>
 
               <div className="h-6 w-px bg-slate-300/30 dark:bg-slate-600/30 mx-1" />

@@ -24,10 +24,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
   return (
     <div 
     // style={{border:'solid 1px red'}} 
-    className="fixed inset-0 z-[100] flex items-center justify-center p-4 h-[100%]">
+    className="fixed inset-0 z-100 flex items-center justify-center p-4 h-[100%]">
       <div 
         // style={{border: 'solid 2px green'}}
-        className="  absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200"
+        className=" absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200"
         onClick={onClose}
       />
       <div className="relative h-[100%] max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl shadow-black/20 border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200 overflow-hidden">

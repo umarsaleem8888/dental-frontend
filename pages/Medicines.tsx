@@ -48,7 +48,7 @@ const MedicinesComponent: React.FC = () => {
     id: null,
   });
 
-  /* ✅ FETCH DATA ON PAGE ENTER */
+  /*  FETCH DATA ON PAGE ENTER */
   useEffect(() => {
     const loadMedicines = async () => {
       try {

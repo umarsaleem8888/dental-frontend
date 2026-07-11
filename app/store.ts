@@ -13,6 +13,7 @@ import storage from 'redux-persist/lib/storage';
 import invoiceReducer from '../slices/invoice';
 import labReducer from '../slices/lab';
 import labProductSlice from '../slices/labProduct'
+import allroles from '../slices/rolesSlice';
 
 
 const rootReducer = combineReducers({
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   lab:labReducer,
   labProduct:labProductSlice,
   auth: authReducer,
+  roles: allroles,
 
 });
 
@@ -34,7 +36,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['ui','medicines','doctors','patients','prescriptions','invoices','lab','labProduct'], 
+  whitelist: ['ui','medicines','doctors','patients','prescriptions','invoices','lab','labProduct',], 
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

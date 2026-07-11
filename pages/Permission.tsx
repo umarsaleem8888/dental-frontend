@@ -2,13 +2,35 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import CustomTooltip from "@/components/CustomTooltip";
 import Modal from "@/components/Modal";
 import { showToast } from "@/components/Toast";
-import { apiDelete } from "@/utilz/endpoints";
-import { BookText, Check, DeleteIcon, Edit2, Eye, EyeClosed, EyeOff, Folder, Minus, Notebook, Pencil, Plus, Save, Trash2, X } from "lucide-react";
-import React, { useState } from "react";
+import { addRole, deleteRole, emptyRole, updateRole } from "@/slices/rolesSlice";
+import { apiDelete, apiGet, apiPost, apiPut } from "@/utilz/endpoints";
+import { BookText, Check, DeleteIcon, Edit2, Eye, EyeClosed, EyeOff, FileExclamationPoint, Folder, Loader2, Minus, MousePointer2, Notebook, Octagon, OctagonAlertIcon, Pencil, Plus, Save, Trash2, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Permission() {
 
     const baseUrl = import.meta.env.VITE_API_URL;
+
+    const dispatch = useDispatch();
+
+    const GetAllRoles = useSelector((state: any) => state.roles.list);
+
+    console.log(GetAllRoles, 'alll lll ');
+
+
+    const [allRoles, setAllRoles] = useState(GetAllRoles || []);
+
+    console.log(allRoles,'allRoles there');
+    
+
+    const [editObj, setEditObj] = useState({
+        id: '',
+        name: '',
+        roleId: ''
+    });
+
+    // console.log(allRoles, 'alll')
 
     const actionIcons = {
         read: <Eye size={16} />,
@@ -38,12 +60,12 @@ export default function Permission() {
     // =========================
     // Roles
     // =========================
-    const roles = [
-        "Super Admin",
-        "Admin",
-        "Doctor",
-        "HR",
-    ];
+    // const roles = [
+    //     "Super Admin",
+    //     "Admin",
+    //     "Doctor",
+    //     "HR",
+    // ];
 
     // =========================
     // Modules
@@ -65,16 +87,17 @@ export default function Permission() {
     // =========================
     // Selected Role
     // =========================
-    const [selectedRole, setSelectedRole] = useState("Super Admin");
+    const [selectedRole, setSelectedRole] = useState('');
+    const [selectedRoleName, setSelectedRoleName] = useState('superAdmin');
 
     // =========================
     // Permissions State
     // =========================
     const [permissions, setPermissions] = useState({
-        "Super Admin": {},
-        "Admin": {},
-        "Doctor": {},
-        "HR": {},
+        // "Super Admin": {},
+        // "Admin": {},
+        // "Doctor": {},
+        // "HR": {},
     });
 
     const [openRoleModal, setOpenRoleModal] = useState(false);
@@ -83,9 +106,38 @@ export default function Permission() {
 
     const [roleName, setRoleName] = useState("");
 
-    const handleEditRole = (role: string) => {
-        setEditingRole(role);
-        setRoleName(role);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const loadRoles = async () => {
+            // console.log('sdfasdfasdf');
+            
+            try {
+                setLoading(true);
+
+                const data = await fetchRoles();
+                dispatch(emptyRole());
+
+                // console.log("load date =>  : ", data);
+
+                data?.forEach((m: any) => dispatch(addRole(m)));
+
+                setSelectedRole(data[0]?.roleId);
+
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadRoles();
+    }, [dispatch]);
+
+    const handleEditRole = (role: any) => {
+        setEditObj(role);
+        setEditingRole(role?.name);
+        setRoleName(role?.name);
         setOpenRoleModal(true);
     };
 
@@ -129,18 +181,157 @@ export default function Permission() {
 
     const handleDelete = async () => {
         try {
+            console.log('del modal : => ',deleteModal);
+            
             if (!deleteModal.id) return;
-            const d = await apiDelete(`${baseUrl}/patient/${deleteModal.id}`);
+            const d = await apiDelete(`${baseUrl}/roles/${deleteModal.id}`);
             if (d) {
-                // dispatch(deletePatient(deleteModal.id));
+
+                console.log( "d : => " , d);
+                
+
+                dispatch(deleteRole(deleteModal.id));
                 showToast({ text: "Deleted Successfully", type: "success" });
+
+                 setSelectedRole('');
+
+                
+
             }
         } catch (error: any) {
             showToast({ text: "Not Deleted, try again", type: "error" });
             console.error(error.message);
-            alert(error.message);
+            // alert(error.message);
         }
     };
+
+    const fetchRoles = async (): Promise<any> => {
+        const baseUrl = import.meta.env.VITE_API_URL;
+        const res = await apiGet(`${baseUrl}/roles`);
+ 
+        return res?.data?.map((m: any) => ({
+            id: m?._id,
+            roleId: m?.roleId,
+            name: m?.name
+        }));
+    };
+
+    const handleRoleAction = async (condition: string) => {
+        var Res;
+        if (condition == 'saveRole') {
+            // console.log('save mode');
+
+            const generateRoleId = (): any => {
+
+                setLoading(true);
+
+                var roleId;
+                do {
+                    roleId = Math.floor(10000 + Math.random() * 90000).toString();
+                } while (
+                    roleId === "12345" ||
+                    roleId === "54321"
+                );
+                return roleId;
+            }
+            var roleid = generateRoleId() || '';
+            const data = {
+                roleId: roleid,
+                name: roleName,
+            }
+            Res = await apiPost(`${baseUrl}/roles`, data);
+
+
+            if (Res) {
+
+                // console.log(Res,'REs...R');
+                
+
+                const data = {
+                    id: Res?.data?._id,
+                    roleId: Res?.data?.roleId,
+                    name: Res?.data?.name,
+
+                }
+
+                console.log(data,'dddd aaa ttt aa');
+                
+
+                if(GetAllRoles?.length <= 0){
+                    dispatch(addRole(data));
+                    setSelectedRole(Res[0]?.roleId);
+                }
+                else{
+                     dispatch(addRole(data));
+                }
+                
+                
+
+            }
+
+            showToast({
+                text: " New Role Created successfully",
+                type: "success",
+            });
+
+            setLoading(false);
+
+            setOpenRoleModal(false);
+
+
+            // console.log(Res, 'res of save ....');
+
+
+        } else {
+
+            // console.log('edit obj : ',editObj);
+
+            const data = {
+                id: editObj?.id,
+                name: roleName || editObj?.name,
+                roleId: editObj?.roleId,
+            }
+
+            // console.log('data : => ', data);
+
+
+            Res = await apiPut(`${baseUrl}/roles/${editObj?.id}`, data)
+
+            // console.log(Res, 'REs of update');
+
+            // dispatch(updateRole(data));
+            
+            const d = {
+                id: Res?.data?._id,
+                roleId: Res?.data?.roleId,
+                name: Res?.data?.name,
+                
+            }
+
+            console.log('d : ',d);
+            
+            
+            dispatch(updateRole(d));
+            setLoading(false);
+            
+            showToast({
+                text: "Role Updated successfully",
+                type: "success",
+            });
+            setLoading(false);
+
+            setSelectedRoleName(d?.name)
+
+            setOpenRoleModal(false);
+
+        }
+
+    }
+
+    const handleRoleSelected = (role: any) => {
+        setSelectedRole(role?.roleId);
+        setSelectedRoleName(role?.name)
+    }
 
     return (
         <div className="min-h-screen bg-slate-100 p-6 rounded-xl">
@@ -210,43 +401,48 @@ export default function Permission() {
 
                     <div className="space-y-3">
 
-                        {roles?.map((role) => {
+                        {loading ? <div className="w-full flex justify-center items-center gap-2" > <Loader2 color="blue" /> </div> : GetAllRoles?.length <= 0 ?
+                            <div className="w-full flex justify-center items-center gap-2" > No Roles Founded <FileExclamationPoint size={14} /> </div>
+                            : GetAllRoles?.map((role: any) => {
 
-                            const active = selectedRole === role;
+                                const active = selectedRole === role?.roleId;
 
-                            return (
-                                <button
-                                    key={role}
-                                    onClick={() => setSelectedRole(role)}
-                                    className={`w-full text-left p-4 rounded-2xl transition-all  shadow-md`}
-                                >
-                                    <div className="flex justify-between items-center" >
-                                        <div className={`flex gap-2 items-center `} >
-                                            <div
-                                                className={`
+                                console.log('act : ',allRoles);
+                                
+
+                                return (
+                                    <button
+                                        key={role?.roleId}
+                                        onClick={() => handleRoleSelected(role)}
+                                        className={`w-full text-left p-4 rounded-2xl transition-all  shadow-md`}
+                                    >
+                                        <div className="flex justify-between items-center" >
+                                            <div className={`flex gap-2 items-center `} >
+                                                <div
+                                                    className={`
                                                              rounded-full bg-blue-600
                                                             transition-all duration-300 ease-in-out
                                                             ${active ? "scale-100 opacity-100 h-2 w-2" : "scale-0 opacity-0 h-0 w-0"}
                                                          `}
-                                            />
-                                            <p className={`font-bold ${active ? "text-blue-600" : "text-black"}`}>
-                                                {role}
-                                            </p>
-                                        </div>
-                                        <div className="flex gap-2" >
-                                            <Edit2
-                                                size={14}
-                                                color="green"
-                                                className="cursor-pointer"
-                                                onClick={() => handleEditRole(role)}
-                                            />
-                                            <Trash2 size={16} onClick={() => setDeleteModal({ isOpen: true, id: '098' })} color="red" />
-                                        </div>
+                                                />
+                                                <p className={`font-bold ${active ? "text-blue-600" : "text-black"}`}>
+                                                    {role?.name}
+                                                </p>
+                                            </div>
+                                            <div className="flex gap-2" >
+                                                <Edit2
+                                                    size={14}
+                                                    color="green"
+                                                    className="cursor-pointer"
+                                                    onClick={() => handleEditRole(role)}
+                                                />
+                                                <Trash2 size={16} onClick={() => setDeleteModal({ isOpen: true, id: role?.id || role?._id })} color="red" />
+                                            </div>
 
-                                    </div>
-                                </button>
-                            );
-                        })}
+                                        </div>
+                                    </button>
+                                );
+                            })}
 
                     </div>
                 </div>
@@ -254,6 +450,13 @@ export default function Permission() {
                 {/* ========================= */}
                 {/* Right Side Permissions */}
                 {/* ========================= */}
+
+                {
+                GetAllRoles && GetAllRoles?.length <=0 ? <div className="flex-full  col-span-3 text-[24px] bold gap-4 flex-col flex justify-center items-center" > <p> module not found </p>  <OctagonAlertIcon size={40} /> </div>
+                    :
+
+                    selectedRole ?
+
                 <div className="lg:col-span-3 bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
 
                     <div className="flex items-center justify-between mb-8">
@@ -267,7 +470,7 @@ export default function Permission() {
                                            `}
                                 key={selectedRole}
                             >
-                                {selectedRole} Permissions
+                                {selectedRoleName} Permissions
                             </h2>
 
                             <p className="text-slate-500 mt-1">
@@ -283,7 +486,7 @@ export default function Permission() {
                     </div>
 
                     {/* Modules */}
-                    <div className="space-y-5 ">
+                    <div className="  space-y-5 ">
 
                         {modules?.map((module) => (
                             <div
@@ -448,10 +651,13 @@ export default function Permission() {
                                     >
 
 
-                                        <div className="  grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <div className="   grid grid-cols-2 md:grid-cols-4 gap-4">
                                             {actions?.map((action) => {
 
                                                 const active = (permissions as any)?.[selectedRole]?.[module]?.[action];
+
+                                                // console.log(active, ' active');
+
 
                                                 return (
 
@@ -481,7 +687,8 @@ export default function Permission() {
                                                                 }
     `}
                                                         >
-                                                            {/* Tooltip */}
+
+
                                                             <div
                                                                 className="
             pointer-events-none
@@ -507,7 +714,7 @@ export default function Permission() {
                                                             >
                                                                 {actionTooltips[action] ?? `Manage ${action} permission`}
 
-                                                                {/* Arrow */}
+
                                                                 <div
                                                                     className="
                 absolute
@@ -551,13 +758,20 @@ export default function Permission() {
 
                                 </div>
 
-                                {/* ///// */}
+
 
                             </div>
                         ))}
 
                     </div>
                 </div>
+                : 
+                <div className=" text-[24px] bold col-span-3 flex flex-col justify-center items-center" >
+                      <p>Please Select the Role</p>
+                      <MousePointer2 size={40} />
+                </div>
+                }
+
             </div>
             {/* //// */}
 
@@ -631,6 +845,7 @@ export default function Permission() {
                         </button>
 
                         <button
+                            onClick={() => handleRoleAction(!editingRole ? 'saveRole' : 'editRole')}
                             className="
                     flex
                     items-center

@@ -67,7 +67,7 @@ const MedicineEdit: React.FC = () => {
       if (formData?.id) {
         const m = await apiPut(`${baseUrl}/medicines/${formData?.id}`, formData);
 
-        console.log(formData,'ffff');
+        // console.log(formData,'ffff');
         
 
         if (m) {
