@@ -248,7 +248,7 @@ const Tooth: React.FC<SelectedTeethProps> = ({ teeth }) => {
                                                         <div className='bg-red-600 rounded-full h-1 w-1'></div>
                                                     )
                                                 }
-                                                <img src={item.svg} className=' h-12 w-4' />
+                                                <img src={item.svg} className=' h-14 w-6' />
                                             </>
                                         }
                                     </div>
@@ -299,8 +299,10 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
             {/* <div className="bg-gradient-to-r from-slate-50 via-white to-slate-50 border-b border-slate-200 px-8 py-6"> */}
 
-            <div className="max-w-4xl m-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden print:shadow-none print:border-none print:rounded-none grid grid-cols-12 gap-4 print:gap-2">
-
+           {/* <div>adfsdf</div> */}
+           <div className='  max-w-4xl m-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden print:shadow-none print:border-none print:rounded-none ' >
+            <div className='h-[200px]' >  </div>
+            <div className="  max-w-4xl m-auto bg-white  overflow-hidden  print:rounded-none grid grid-cols-12 gap-4 print:gap-2">
 
                 {/* Name */}
                 <div className=" col-span-3 mt-5 print:mt-5 ml-5 mr-5 print:mt-3 print:ml-3 print:mr-3">
@@ -309,7 +311,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
                         Patient Name
                     </p>
 
-                    <div className="h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
+                    <div className="text-[12px] h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
                         {/* Dynamic Name */}
                         {patient?.name || 'N/A'}
 
@@ -324,7 +326,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
                         Age
                     </p>
 
-                    <div className="h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
+                    <div className="text-[12px] h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
 
 
                         {patient?.age || 'N/A'}
@@ -335,12 +337,12 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
                 {/* Patient ID */}
                 <div className="col-span-3 mt-5 ml-5">
-                    <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
+                    <p className=" flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
                         <Hash size={14} className="text-sky-600" />
                         Patient ID
                     </p>
 
-                    <div className="h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
+                    <div className="text-[12px] h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
 
                         {/* {patient?.id || 'N/A'} */}
                         N/A
@@ -349,12 +351,12 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
                 {/* Date */}
                 <div className="col-span-4 mt-5 ml-5 mr-5">
-                    <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
+                    <p className="text-[12px] flex items-center gap-2  uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
                         <CalendarDays size={14} className="text-sky-600" />
                         Date
                     </p>
 
-                    <div className="h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
+                    <div className="text-[11px] h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
                         {todayDate}
                     </div>
                 </div>
@@ -425,7 +427,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
                             <h3 className="flex items-center gap-2 text-xs uppercase tracking-[0.20em] font-semibold text-white">
                                 <FileHeart size={15} />
-                                CLINICAL INSTRUCTIONS
+                                History
                             </h3>
 
                         </div>
@@ -434,7 +436,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
                             {
                                 prescription?.diagnosis ?
-                                    <p className='text-slate-600' >
+                                    <p className='text-slate-600 text-[12px]' >
                                         {prescription?.diagnosis}
                                     </p>
                                     :
@@ -510,7 +512,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
                         <div className="flex items-center justify-between px-6 py-3 bg-gradient-to-r from-slate-800 to-slate-600">
 
                             <h3 className="text-xs uppercase tracking-[0.20em] font-semibold text-white">
-                                DIAGNOSIS DETAILS
+                               PROVISIONAL DIAGNOSIS
                             </h3>
 
                         </div>
@@ -519,7 +521,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
                             {
                                 prescription?.diagnosis ?
-                                    <p className='text-slate-600' >
+                                    <p className='text-slate-600 text-[12px]' >
                                         {prescription?.notes}
                                     </p>
                                     :
@@ -570,7 +572,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
                                 {/* RX */}
 
                                 <h1 className="
-          text-4xl
+          text-3xl
           font-bold
           tracking-[0.20em]
           text-slate-800
@@ -649,28 +651,28 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
                                                 <div className="flex items-center gap-4 px-6 py-3 print:py-2">
 
-                                                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-100">
+                                                    {/* <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-100">
 
                                                         <Pill
                                                             size={18}
                                                             className="text-sky-600"
                                                         />
 
-                                                    </div>
+                                                    </div> */}
 
                                                     <div>
 
-                                                        <h4 className="font-semibold text-slate-800">
+                                                        <h4 className="font-semibold text-slate-800 text-[12px]">
 
                                                             {med.name}
 
                                                         </h4>
 
-                                                        <p className="text-xs text-slate-400">
+                                                        {/* <p className="text-xs text-slate-400">
 
                                                             Oral Medicine
 
-                                                        </p>
+                                                        </p> */}
 
                                                     </div>
 
@@ -682,10 +684,10 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
                                                     <div className="inline-flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2">
 
-                                                        <Clock
+                                                        {/* <Clock
                                                             size={14}
                                                             className="text-amber-600"
-                                                        />
+                                                        /> */}
 
                                                         <span className="font-semibold text-amber-700">
 
@@ -703,10 +705,10 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
                                                     <div className="inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2">
 
-                                                        <CalendarDays
+                                                        {/* <CalendarDays
                                                             size={14}
                                                             className="text-emerald-600"
-                                                        />
+                                                        /> */}
 
                                                         <span className="font-semibold text-emerald-700">
 
@@ -812,6 +814,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
                 {/* //// */}
 
             </div>
+           </div>
 
         </div >
     )
