@@ -5,18 +5,30 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../app/store';
 import { ArrowLeft, Printer, FileText, User, Stethoscope, MapPin, Calendar, CheckCircle, Pill, Clock } from 'lucide-react';
 import DentalChart from '../components/DentalChart';
-import PrescriptionTemp1 from './prescriptionTemp1';
+import PrescriptionTemp1 from './PrescriptionTemp1';
 import PrescriptionTemp2 from './PrescriptionTemp2';
+
+import { useRef } from "react";
+
+import usePrint from "@/hooks/usePrint";
+
+import PrintButton from "../components/Print/PrintButton";
+import { PrintWrapper } from '@/components/Print';
 
 const PrescriptionView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
+  const printRef = useRef<HTMLDivElement>(null);
+  const handlePrint = usePrint(printRef);
+
   const prescription = useSelector((state: RootState) =>
     state.prescriptions.list.find(p => (p?.id === id) || (p?._id === id))
   );
 
-  console.log(prescription, 'pppprc');
+  // console.log(prescription, 'pppprc');
+
+
 
 
   const patients = useSelector((state: RootState) => state.patients.list);
@@ -35,9 +47,9 @@ const PrescriptionView: React.FC = () => {
   const patient = patients.find(p => p.id === prescription.patientId);
   const doctor = doctors.find(d => d.id === prescription.doctorId);
 
-  const handlePrint = () => {
-    window.print();
-  };
+  // const handlePrint = () => {
+  //   window.print();
+  // };
 
   return (
     <>
@@ -58,9 +70,26 @@ const PrescriptionView: React.FC = () => {
           Print Prescription
         </button> */}
 
+        <PrintButton onPrint={handlePrint} />
+
       </div>
 
-      <PrescriptionTemp1 patient={patient} doctor={doctor} prescription={prescription} />
+
+
+      <PrintWrapper
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+      >
+        <div ref={printRef}>
+
+          <PrescriptionTemp1 patient={patient} doctor={doctor} prescription={prescription} />
+
+        </div>
+
+      </PrintWrapper>
+
       {/* <PrescriptionTemp2 patient={patient} doctor={doctor} prescription={prescription} /> */}
 
 
@@ -68,10 +97,19 @@ const PrescriptionView: React.FC = () => {
         <div className="p-2 bg-primary-100 dark:bg-primary-900/30 text-primary-600 rounded-lg">
           <Printer size={16} />
         </div>
+        {/* //// */}
+
+        {/**/}
+
+        {/* //// */}
         <p className="text-xs text-primary-700 dark:text-primary-400 font-medium leading-tight">
           When printing, ensure "Background Graphics" is enabled in your browser settings to keep the dental chart highlights and layout colors.
         </p>
       </div>
+
+      {/* //// */}
+
+
 
     </>
 

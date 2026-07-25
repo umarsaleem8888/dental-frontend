@@ -7,6 +7,8 @@ import { persistor, store } from './app/store';
 import App from './App';
 import { PersistGate } from 'redux-persist/integration/react';
 
+
+
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error("Root element not found");
 

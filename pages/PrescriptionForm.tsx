@@ -262,13 +262,23 @@ const PrescriptionForm: React.FC = () => {
                         placeholder="Search medicine..."
                         isClearable
                       />
+                      {
+                        formData?.medicines &&
+                        formData.medicines.length >= 10 && (
+                          <p className="text-red-500 text-[12px]">
+                            You can select a maximum of 10 medicines.
+                          </p>
+                        )
+                      }
+
                     </div>
 
                     {/* //// */}
                     <button
+                      disabled={formData?.medicines?.length == 10}
                       type="button"
                       onClick={addMedication}
-                      className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2"
+                      className="bg-primary-600 max-h-11 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2"
                     >
                       <Plus size={18} /> Add
                     </button>
@@ -332,6 +342,7 @@ const PrescriptionForm: React.FC = () => {
                     <label className="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Diagnosis</label>
                     <input
                       type="text"
+                      maxLength={75}
                       required
                       value={formData.diagnosis}
                       onChange={(e) => setFormData({ ...formData, diagnosis: e.target.value })}
@@ -342,6 +353,7 @@ const PrescriptionForm: React.FC = () => {
                   <div>
                     <label className="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Clinical Notes</label>
                     <textarea
+                      maxLength={75}
                       rows={4}
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -352,13 +364,8 @@ const PrescriptionForm: React.FC = () => {
                 </div>
               </section>
 
-              {/* Step 4: Image */}
-
-
-              {/* Step 4: X-Ray Upload */}
-              <section className="space-y-6">
+              {/* <section className="space-y-6">
                 <div
-                  // style={{border:'solid 2px green'}} 
                   className=' flex justify-between items-center' >
                   <h3 className="text-xl font-bold flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-600 flex items-center justify-center">
@@ -366,30 +373,10 @@ const PrescriptionForm: React.FC = () => {
                     </div>
                     X-Ray Image
                   </h3>
-
-
-                  {/* Remove Button */}
-
-                  {/* {
-                    xrayPreview &&
-                    (
-
-                      <button
-                        type="button"
-                        onClick={removeXray}
-                        className=" gap-2 rounded-md bg-red-500 text-white pl-3 pr-3 pt-1 pb-1 flex items-between justify-center shadow-lg"
-                      >
-                        Delete Image <Trash2 width={16} height={16} style={{ marginTop: '3px' }} />
-                      </button>
-                    )
-                  } */}
-
-
                 </div>
 
                 <div className="bg-slate-50 dark:bg-slate-800/40 p-6 rounded-2xl space-y-4">
 
-                  {/* Upload Button */}
                   <label className="cursor-pointer w-full border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center hover:border-primary-500 transition-all">
                     <span className="font-bold text-sm text-slate-500">
                       Click to Select X-Ray Image
@@ -404,7 +391,7 @@ const PrescriptionForm: React.FC = () => {
                     />
                   </label>
 
-                  {/* Preview */}
+  
                   {xrayImages.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       {xrayImages.map((img, index) => (
@@ -419,7 +406,7 @@ const PrescriptionForm: React.FC = () => {
                           />
 
                           <div className="absolute top-2 right-2 flex gap-2">
-                            {/* View */}
+             
                             <button
                               type="button"
                               onClick={() => openViewer(index)}
@@ -428,7 +415,6 @@ const PrescriptionForm: React.FC = () => {
                               <Eye size={16} />
                             </button>
 
-                            {/* Delete */}
                             <button
                               type="button"
                               onClick={() => removeXray(index)}
@@ -454,10 +440,7 @@ const PrescriptionForm: React.FC = () => {
                   }))}
                 />
 
-                {/* //// */}
-
-                {/* ))} */}
-              </section>
+              </section> */}
 
               {/* //////// */}
             </div>
