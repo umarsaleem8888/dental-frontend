@@ -1,5 +1,5 @@
 import { todayDate } from '@/utilz/getTodayDate';
-import { BadgeCheck, Cake, CalendarDays, ChevronDown, ChevronDownIcon, ChevronUp, ClipboardList, Clock, FileHeart, Hash, MapPin, MessageSquareWarning, Package, Phone, Pill, Stethoscope, TriangleAlert, User, WineOff } from 'lucide-react';
+import { BadgeCheck, Cake, CalendarDays, ChevronDown, ChevronDownIcon, ChevronUp, ClipboardList, Clock, FileHeart, Hash, MapPin, MessageSquareWarning, Package, PersonStanding, Phone, Pill, Stethoscope, TriangleAlert, User, WineOff } from 'lucide-react';
 import React from 'react'
 
 import UpperTeeth1 from '../images/svg/uper 1.svg';
@@ -301,70 +301,80 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
            {/* <div>adfsdf</div> */}
            <div className='  max-w-4xl m-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden print:shadow-none print:border-none print:rounded-none ' >
-            <div className='h-[200px]' >  </div>
+            <div className='h-[140px]' >  </div>
             <div className="  max-w-4xl m-auto bg-white  overflow-hidden  print:rounded-none grid grid-cols-12 gap-4 print:gap-2">
 
                 {/* Name */}
-                <div className=" col-span-3 mt-5 print:mt-5 ml-5 mr-5 print:mt-3 print:ml-3 print:mr-3">
-                    <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
-                        <User size={14} className="text-sky-600" />
-                        Patient Name
+                <div className=" col-span-4  ml-5 mr-5 print:mt-[0px] print:ml-3 print:mr-3">
+                    <div className='flex gap-1' >
+
+                    <p className="flex items-center gap-1 text-[10px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
+                        <User size={10} className="text-sky-600" />
+                        Patient Name :
                     </p>
 
-                    <div className="text-[12px] h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
+                    <div className="print:mt-[-14px] mt-[-9px] text-[12px] h-7 px-0 flex items-end print:mt-[-9px]  transition-colors duration-300">
                         {/* Dynamic Name */}
                         {patient?.name || 'N/A'}
 
 
                     </div>
+                    </div>
                 </div>
 
                 {/* Age */}
-                <div className="col-span-2 mt-5 ml-5">
-                    <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
-                        <Cake size={14} className="text-sky-600" />
+                <div className="col-span-2  ml-5">
+                    <div className='flex gap-1' >
+                    <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
+                        <PersonStanding size={10} className="text-sky-600" />
                         Age
                     </p>
 
-                    <div className="text-[12px] h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
+                    <div className="print:mt-[-12px] mt-[-9px] text-[12px] h-7 px-0 flex items-end hover:border-sky-500 transition-colors duration-300">
 
 
                         {patient?.age || 'N/A'}
 
 
                     </div>
+                    </div>
                 </div>
 
                 {/* Patient ID */}
-                <div className="col-span-3 mt-5 ml-5">
-                    <p className=" flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
-                        <Hash size={14} className="text-sky-600" />
+                <div className="col-span-3 ml-5">
+
+                    <div className='flex gap-1' >
+                    <p className=" flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
+                        <Hash size={10} className="text-sky-600" />
                         Patient ID
                     </p>
 
-                    <div className="text-[12px] h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
+                    <div className="print:mt-[-12px] mt-[-9px] text-[12px] h-7 px-0 flex items-end  hover:border-sky-500 transition-colors duration-300">
 
                         {/* {patient?.id || 'N/A'} */}
                         N/A
                     </div>
+                    </div>
                 </div>
 
                 {/* Date */}
-                <div className="col-span-4 mt-5 ml-5 mr-5">
-                    <p className="text-[12px] flex items-center gap-2  uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
-                        <CalendarDays size={14} className="text-sky-600" />
-                        Date
+                <div className="col-span-3  ml-5 mr-5">
+                    <div className='flex gap-1 ' >
+                    <p className="text-[10px] flex items-center gap-2  uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">
+                        <CalendarDays size={10} className="text-sky-600" />
+                        Date 
                     </p>
 
-                    <div className="text-[11px] h-7 px-0 flex items-end border-b-2 border-slate-300 hover:border-sky-500 transition-colors duration-300">
-                        {todayDate}
+                    <div className="print:mt-[-14px] mt-[-9px] text-[11px] h-7 px-0 flex items-end  hover:border-sky-500 transition-colors duration-300">
+                        {todayDate || 'N/A' }
+                    </div>
                     </div>
                 </div>
 
 
                 {/* ================= LEFT PANEL ================= */}
 
-                <div className="mt-4 col-span-4 bg-white border-r border-slate-200 flex flex-col">
+                <div className=" min-h-[800px] mt-4 col-span-4 bg-white border-r border-slate-200 flex flex-col">
 
                     {/* ================= Doctor Information ================= */}
 
@@ -432,7 +442,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
                         </div>
 
-                        <div className="min-h-[85px] p-2">
+                        <div className="min-h-[150px] p-2">
 
                             {
                                 prescription?.diagnosis ?
@@ -462,7 +472,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
                         </div>
 
-                        <div className="min-h-[85px]  flex justify-center items-center flex-col">
+                        <div className="min-h-[150px]  flex justify-center items-center flex-col">
 
                             <div className='mt-4 mb-4 w-[90%]' >
                                 <Tooth teeth={prescription?.selectedTeeth} />
@@ -517,7 +527,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
 
                         </div>
 
-                        <div className="min-h-[85px] p-2">
+                        <div className="min-h-[150px] p-2">
 
                             {
                                 prescription?.diagnosis ?
