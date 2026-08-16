@@ -14,6 +14,7 @@ import invoiceReducer from '../slices/invoice';
 import labReducer from '../slices/lab';
 import labProductSlice from '../slices/labProduct'
 import allroles from '../slices/rolesSlice';
+import roleModules from '../slices/roleModulesSlice'
 
 
 const rootReducer = combineReducers({
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   labProduct:labProductSlice,
   auth: authReducer,
   roles: allroles,
+  modules : roleModules,
 
 });
 
@@ -36,7 +38,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['ui','medicines','doctors','patients','prescriptions','invoices','lab','labProduct',], 
+  whitelist: ['ui','medicines','doctors','patients','prescriptions','invoices','lab','labProduct','modules'], 
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

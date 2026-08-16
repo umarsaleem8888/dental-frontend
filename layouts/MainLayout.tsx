@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../app/store';
 import { logout } from '../slices/authSlice';
 import {
-  
+
   toggleTheme,
   toggleGlassMode,
   resetUI,
@@ -75,12 +75,22 @@ import {
   FlaskConical,
   Package,
   UserLockIcon,
+  UserRoundPlus,
 } from 'lucide-react';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { apiPost } from '@/utilz/endpoints';
+import UserProfile from '../pages/UserProfile';
+import { usePermission } from '@/hooks/usrPermissions';
 // import Loading from '@/components/loading';
 
 const baseUrl = import.meta.env.VITE_API_URL;
+
+const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+const UserName = user.user?.name;
+const UserRole = user.user?.roleName;
+
+const { canView, can } = usePermission();
 
 const PRESET_GRADIENTS = [
   { name: 'Midnight Pro', start: '#0f172a', end: '#1e293b' },
@@ -155,12 +165,19 @@ const MainLayout: React.FC = () => {
 
   const Hash = window.location.hash;
   var pathName = false;
+  var signUPPath = false;
 
-  if(Hash == '#/permission'){
+  if (Hash == '#/permission') {
     pathName = true;
+    signUPPath = false;
   }
-  else{
+  if (Hash == '#/signup') {
+    signUPPath = true;
     pathName = false;
+  }
+  else {
+    pathName = false;
+    signUPPath = false;
   }
 
   // console.log(pathName,'- pathname')
@@ -174,6 +191,7 @@ const MainLayout: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'visual' | 'type' | 'layout'>('visual');
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
+  const [openUserProfileModal, setOpenUserProfileModal] = useState(false);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -243,14 +261,14 @@ const MainLayout: React.FC = () => {
   const pathnames = location.pathname.split('/').filter((x) => x);
   const navItems = [
 
-    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/medicines', label: 'Medicines', icon: Pill },
-    { path: '/doctors', label: 'Doctors', icon: Stethoscope },
-    { path: '/patients', label: 'Patients', icon: Users },
-    { path: '/appointments', label: 'Appointments', icon: Calendar },
-    { path: '/prescriptions', label: 'Prescriptions', icon: FileText },
-    { path: '/Invoices', label: 'Invoices', icon: ReceiptText },
-    { path: '/lab', label: 'Labs', icon: FlaskConical },
+    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, module: null, },
+    { path: '/medicines', label: 'Medicines', icon: Pill, module: "medicines", },
+    { path: '/doctors', label: 'Doctors', icon: Stethoscope, module: "doctors", },
+    { path: '/patients', label: 'Patients', icon: Users, module: "patient", },
+    // { path: '/appointments', label: 'Appointments', icon: Calendar ,  module: "", },
+    { path: '/prescriptions', label: 'Prescriptions', icon: FileText, module: "prescription", },
+    { path: '/Invoices', label: 'Invoices', icon: ReceiptText, module: "invoice", },
+    { path: '/lab', label: 'Labs', icon: FlaskConical, module: "labs", },
     // { path: '/products', label: 'LabProducts', icon: Package  },
     // { path: '/analysis', label: 'Analysis', icon: BarChart3 },
 
@@ -386,8 +404,9 @@ const MainLayout: React.FC = () => {
           </div>
 
           {/* Sidebar Navigation */}
-          <nav className="flex-1 overflow-y-auto p-3 space-y-2 scrollbar-hide">
+          {/* <nav className="flex-1 overflow-y-auto p-3 space-y-2 scrollbar-hide">
             {navItems?.map((item) => (
+              <>    
               <NavLink
                 key={item.path}
                 to={item.path}
@@ -401,7 +420,54 @@ const MainLayout: React.FC = () => {
                 <item.icon size={20} className="shrink-0 flex-none" />
                 {!ui.sidebarLayout.collapsed && <span className="font-bold truncate text-sm shrink leading-none">{item.label}</span>}
               </NavLink>
+              </>
             ))}
+          </nav> */}
+
+          <nav className="flex-1 overflow-y-auto p-3 space-y-2 scrollbar-hide">
+            {navItems
+              .filter((item) => {
+                // Dashboard always visible
+                if (!item.module) {
+                  return true;
+                }
+
+                // Other modules permission ke according
+                return canView(item.module);
+              })
+              .map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  title={
+                    ui.sidebarLayout.collapsed
+                      ? item.label
+                      : ""
+                  }
+                  className={({ isActive }) => `
+          flex items-center rounded-xl transition-all duration-200 min-h-[48px]
+          ${ui.sidebarLayout.collapsed
+                      ? "justify-center px-0"
+                      : "gap-4 px-4"
+                    }
+          ${isActive
+                      ? "bg-white/20 shadow-lg shadow-black/10 backdrop-blur-md text-white"
+                      : "hover:bg-white/10 text-white/70 hover:text-white"
+                    }
+        `}
+                >
+                  <item.icon
+                    size={20}
+                    className="shrink-0 flex-none"
+                  />
+
+                  {!ui.sidebarLayout.collapsed && (
+                    <span className="font-bold truncate text-sm shrink leading-none">
+                      {item.label}
+                    </span>
+                  )}
+                </NavLink>
+              ))}
           </nav>
 
           {!ui.sidebarLayout.collapsed && <div onMouseDown={startResizing} className="absolute top-0 right-0 w-1.5 h-full cursor-col-resize hover:bg-white/20 transition-colors z-50" />}
@@ -426,17 +492,19 @@ const MainLayout: React.FC = () => {
               {!ui.sidebarLayout.collapsed && <span className="font-bold text-sm shrink leading-none">Sign Out</span>}
             </button>
 
-            <div className={`flex items-center ${ui.sidebarLayout.collapsed ? 'justify-center' : 'gap-3 px-4'} py-2`}>
-              <div className="w-8 h-8 rounded-full bg-primary-500 border border-white/20 flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">AD</div>
+            <div onClick={() => setOpenUserProfileModal(true)} className={`  hover:bg-white/10 transition-colors text-white/70 hover:text-white rounded-xl cursor-pointer flex items-center ${ui.sidebarLayout.collapsed ? 'justify-center' : 'gap-3 px-4'} py-2`}>
+              <div className="w-8 h-8 rounded-full bg-primary-500 border border-white/20 flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">{UserName[0]}</div>
               {!ui.sidebarLayout.collapsed && (
                 <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-bold truncate">Admin User</span>
-                  <span className="text-[10px] text-white/50 truncate">Chief Dentist</span>
+                  <span className="text-sm font-bold truncate">{UserName}</span>
+                  <span className="text-[10px] text-white/50 truncate">{UserRole}</span>
                 </div>
               )}
             </div>
           </div>
         </aside>
+
+        {/* UserProfile */}
 
         <main className="flex-1 flex flex-col overflow-hidden relative">
           <header
@@ -462,19 +530,41 @@ const MainLayout: React.FC = () => {
                 <Settings size={20} className="group-hover:rotate-45 transition-transform duration-500" />
               </button>
 
-               <button
-                onClick={() => navigate('/permission')}
-                className={`p-2 text-slate-500 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all active:scale-95 group border border-transparent hover:border-white/20 ${getHeaderIconRadius()}`}
-              >
-                <UserLockIcon size={20} className={`text-${ pathName ? 'blue-500 ' : '' } group-hover:zoom-45 transition-transform duration-500`} />
-              </button>
+              {JSON.parse(localStorage.getItem("user") || "{}")?.user?.role === "6a7a1352cf6822fb3ae371a9" ? (
+                <>
+                  <button
+                    onClick={() => navigate("/permission")}
+                    className={`p-2 text-slate-500 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all active:scale-95 group border border-transparent hover:border-white/20 ${getHeaderIconRadius()}`}
+                  >
+                    <UserLockIcon
+                      size={20}
+                      className={`text-${pathName ? "blue-500" : ""} group-hover:zoom-45 transition-transform duration-500`}
+                    />
+                  </button>
+
+                  <button
+                    onClick={() => navigate("/signup")}
+                    className={`p-2 text-slate-500 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all active:scale-95 group border border-transparent hover:border-white/20 ${getHeaderIconRadius()}`}
+                  >
+                    <UserRoundPlus
+                      size={20}
+                      className={`text-${signUPPath ? "blue-500" : ""} hover:blue-500 transition-transform duration-500`}
+                    />
+                  </button>
+                </>
+              ) : null}
+
 
               <div className="h-6 w-px bg-slate-300/30 dark:bg-slate-600/30 mx-1" />
 
-              <button className={`flex items-center gap-2 text-white px-5 py-2.5 font-bold text-sm transition-all custom-radius active:scale-[0.97] hover:translate-y-[-1px] ${getButtonStyleClass()}`}>
+              {/* <button className={`flex items-center gap-2 text-white px-5 py-2.5 font-bold text-sm transition-all custom-radius active:scale-[0.97] hover:translate-y-[-1px] ${getButtonStyleClass()}`}>
                 <PlusCircle size={18} />
                 <span className="hidden sm:inline">Add Oppointment</span>
-              </button>
+              </button> */}
+
+
+
+
             </div>
           </header>
 
@@ -782,6 +872,18 @@ const MainLayout: React.FC = () => {
             </button> */}
           </div>
         </Modal>
+
+        <Modal
+          isOpen={openUserProfileModal}
+          onClose={() => setOpenUserProfileModal(false)}
+          title={'User Profile'}
+        >
+
+          <>
+            <UserProfile />
+          </>
+        </Modal>
+
       </div>
 
       <ConfirmDialog
@@ -792,6 +894,8 @@ const MainLayout: React.FC = () => {
         subtitle="Are you sure you want to end your current session?"
         button="Sign Out"
       />
+
+
 
     </>
 

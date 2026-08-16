@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Trash2, Eye, Building2, Pencil, FlaskConical } from 'lucide-react';
+import { Search, Trash2, Eye, Building2, Pencil, FlaskConical, Plus } from 'lucide-react';
 import { apiDelete, apiGet } from '@/utilz/endpoints'; // keep for future
 import Loading from '../components/Loading';
 import { Link, useNavigate } from 'react-router-dom';
@@ -9,15 +9,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../app/store';
 import { showToast } from '@/components/Toast';
 import { formatDate } from '@/utilz/formateDate';
+import { usePermission } from '@/hooks/usrPermissions';
+import NoAccess from '@/components/NoAccess';
 
 const Labs: React.FC = () => {
+
+  const { can } = usePermission();
+  const module = "labs";
+  const canRead = can(module, "read");
+  const canCreate = can(module, "create");
+  const canUpdate = can(module, "update");
+  const canDelete = can(module, "delete");
+
   const baseUrl = import.meta.env.VITE_API_URL;
   const dispatch = useDispatch();
+  const AlllabsData = useSelector((state: RootState) => state.lab.list);
 
-   const AlllabsData = useSelector((state: RootState) => state.lab.list);
+  //  console.log('AlllabsData : ',AlllabsData);
 
-   console.log('AlllabsData : ',AlllabsData);
-   
 
   const navi = useNavigate();
 
@@ -42,20 +51,20 @@ const Labs: React.FC = () => {
       let res;
       res = await apiGet(`${baseUrl}/labs`);
 
-      console.log('res :=>',res?.data);
-      
+      console.log('res :=>', res?.data);
+
 
       ////
 
       return res?.data?.map((m: any) => ({
-      id: m?.id || m?._id,
-      name: m?.name,
-      phone:m?.phone,
-      owner: m?.owner,
-      adress: m?.adress,
-      status: m?.status,
-      createdAt: m?.createdAt
-    }));
+        id: m?.id || m?._id,
+        name: m?.name,
+        phone: m?.phone,
+        owner: m?.owner,
+        adress: m?.adress,
+        status: m?.status,
+        createdAt: m?.createdAt
+      }));
 
       ////
 
@@ -104,27 +113,27 @@ const Labs: React.FC = () => {
     }
   };
 
- 
-   useEffect(() => {
-     const loadData = async () => {
-       dispatch(emptylab());
-       try {
-         setLoading(true);
-         const data = await fetchLabs();
-         data?.forEach((m:any) => dispatch(addlab(m)));
-       } catch (error) {
-         console.error(error);
-       } finally {
-         setLoading(false);
-       }
-     };
-     loadData();
-   }, [dispatch]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      dispatch(emptylab());
+      try {
+        setLoading(true);
+        const data = await fetchLabs();
+        data?.forEach((m: any) => dispatch(addlab(m)));
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, [dispatch]);
 
   // =========================
   // 🔎 SEARCH (FRONTEND)
   // =========================
-  const filteredLabs = AlllabsData?.filter((lab:any) => {
+  const filteredLabs = AlllabsData?.filter((lab: any) => {
     const search = searchTerm.toLowerCase();
     return (
       lab?.name?.toLowerCase().includes(search) ||
@@ -142,29 +151,45 @@ const Labs: React.FC = () => {
     // setLabs((prev) => prev.filter((l) => l.id !== deleteModal.id));
     // setDeleteModal({ isOpen: false, id: null });
 
-     try {
-          if (!deleteModal.id) return;
-          const d = await apiDelete(`${baseUrl}/labs/${deleteModal.id}`);
-          if (d) {
-            dispatch(deletelab(deleteModal.id));
-            showToast({ text: "Deleted Successfully", type: "success" });
-          }
-        } catch (error: any) {
-          showToast({ text: "Not Deleted, try again", type: "error" });
-          console.error(error.message);
-          alert(error.message);
-        }
+    if (!canDelete) {
+      showToast({
+        text: "No Access",
+        type: "info",
+      });
+      return
+    }
+
+    try {
+      if (!deleteModal.id) return;
+      const d = await apiDelete(`${baseUrl}/labs/${deleteModal.id}`);
+      if (d) {
+        dispatch(deletelab(deleteModal.id));
+        showToast({ text: "Deleted Successfully", type: "success" });
+      }
+    } catch (error: any) {
+      showToast({ text: "Not Deleted, try again", type: "error" });
+      console.error(error.message);
+      alert(error.message);
+    }
 
   };
 
-  const handleEdit = (id:string) => {
+  const handleEdit = (id: string) => {
 
-    console.log("id : ",id);
-  
-    if(!id) return;
+    // console.log("id : ", id);
+
+    if (!canUpdate) {
+      showToast({
+        text: "No Access",
+        type: "info",
+      });
+      return
+    }
+
+    if (!id) return;
     let link = `/lab/edit/${id}`;
-    console.log(link,'link');
-    
+    console.log(link, 'link');
+
     navi(link);
   }
 
@@ -187,13 +212,18 @@ const Labs: React.FC = () => {
             <Search className="absolute left-3 top-3.5 text-slate-400" size={16} />
           </div>
 
-          <Link
-            to="/labs/new"
-            className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg active:scale-95"
-          >
-            {/* <FilePlus size={20} /> */}
-            Create Labs
-          </Link>
+          {
+            canCreate ?
+              <Link
+                to="/labs/new"
+                className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg active:scale-95"
+              >
+                <Plus size={20} />
+                Create Labs
+              </Link>
+              : ''
+          }
+
         </div>
 
 
@@ -205,106 +235,108 @@ const Labs: React.FC = () => {
           <Loading color="#0ea5e9" size="25" />
         </div>
       ) : (
-        <>
-          {filteredLabs?.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredLabs?.map((lab:any) => (
-                <div
-                  key={lab?.id || lab?._id }
-                  className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all"
-                >
-                  {/* TOP */}
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600">
-                      <Building2 size={24} />
-                    </div>
+        canRead ?
+          <>
+            {
+              filteredLabs?.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredLabs?.map((lab: any) => (
+                    <div
+                      key={lab?.id || lab?._id}
+                      className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all"
+                    >
 
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`text-[10px] font-bold px-2 py-1 rounded ${lab?.status === 'Active'
-                          ? 'text-emerald-500 bg-emerald-100'
-                          : 'text-rose-500 bg-rose-100'
-                          }`}
-                      >
-                        {lab?.status}
-                      </span>
+                      <div className="flex justify-between items-center mb-4">
+                        <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600">
+                          <Building2 size={24} />
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-[10px] font-bold px-2 py-1 rounded ${lab?.status === 'Active'
+                              ? 'text-emerald-500 bg-emerald-100'
+                              : 'text-rose-500 bg-rose-100'
+                              }`}
+                          >
+                            {lab?.status}
+                          </span>
 
 
-                    </div>
-                  </div>
-
-                  {/* BODY */}
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs text-slate-400">Lab Name</p>
-                      <p className="font-bold text-lg">{lab?.name}</p>
-                    </div>
-
-                    <div>
-                      <p className="text-xs text-slate-400">Owner</p>
-                      <p className="text-sm font-semibold">{lab?.owner}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <p className="text-xs text-slate-400">Phone</p>
-                        <p className="text-sm">{lab?.phone}</p>
+                        </div>
                       </div>
 
-                      <div>
-                        <p className="text-xs text-slate-400">Date</p>
-                        <p className="text-sm">{formatDate(lab?.createdAt)}</p>
+
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-xs text-slate-400">Lab Name</p>
+                          <p className="font-bold text-lg">{lab?.name}</p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs text-slate-400">Owner</p>
+                          <p className="text-sm font-semibold">{lab?.owner}</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <p className="text-xs text-slate-400">Phone</p>
+                            <p className="text-sm">{lab?.phone}</p>
+                          </div>
+
+                          <div>
+                            <p className="text-xs text-slate-400">Date</p>
+                            <p className="text-sm">{formatDate(lab?.createdAt)}</p>
+                          </div>
+                        </div>
+
+                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                          <p className="text-xs text-slate-400">Address</p>
+                          <p className="text-sm">{lab?.adress}</p>
+                        </div>
+                      </div>
+
+
+                      <div className="mt-5 pt-3 border-t flex items-center justify-between ">
+
+                        <div>
+
+                          <Link
+                            to={`/products/${lab?.id || lab?._id}`}
+                            className="bg-primary-600 text-white px-3 py-1 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg active:scale-95"
+                          >
+                            <FlaskConical size={14} />
+                            Show All Products
+                          </Link>
+
+                        </div>
+                        <div>
+                          <button onClick={(e) => handleEdit(lab?.id || lab?._id)} className="p-1.5 text-slate-300 hover:text-amber-500">
+                            <Pencil size={18} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              setDeleteModal({ isOpen: true, id: lab.id || lab?._id })
+                            }
+                            className="p-1.5 text-slate-300 hover:text-rose-500"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </div>
                     </div>
-
-                    <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                      <p className="text-xs text-slate-400">Address</p>
-                      <p className="text-sm">{lab?.adress}</p>
-                    </div>
-                  </div>
-
-                  {/* FOOTER */}
-                  <div className="mt-5 pt-3 border-t flex items-center justify-between ">
-                    {/* <button className="p-2 text-slate-400 hover:text-blue-500">
-                      <Eye size={18} />
-                    </button> */}
-                    <div>
-
-                      <Link
-                        to={`/products/${lab?.id || lab?._id }`}
-                        className="bg-primary-600 text-white px-3 py-1 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg active:scale-95"
-                      >
-                        <FlaskConical  size={14} />
-                        Show All Products
-                      </Link>
-
-                    </div>
-                    <div>
-                      <button onClick={(e)=> handleEdit(lab?.id || lab?._id)} className="p-1.5 text-slate-300 hover:text-amber-500">
-                        <Pencil size={18} />
-                      </button>
-                      <button
-                        onClick={() =>
-                          setDeleteModal({ isOpen: true, id: lab.id || lab?._id })
-                        }
-                        className="p-1.5 text-slate-300 hover:text-rose-500"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center pt-20">
-              <Building2 size={40} className="text-slate-300" />
-              <p className="text-sm text-slate-500 mt-2">
-                No Labs Found
-              </p>
-            </div>
-          )}
-        </>
+              ) : (
+                <div className="flex flex-col items-center justify-center pt-20">
+                  <Building2 size={40} className="text-slate-300" />
+                  <p className="text-sm text-slate-500 mt-2">
+                    No Labs Found
+                  </p>
+                </div>
+              )
+            }
+          </>
+          : <NoAccess module='Labs' />
       )}
 
       {/* ❗ DELETE MODAL */}
@@ -314,7 +346,7 @@ const Labs: React.FC = () => {
         onConfirm={handleDelete}
         title="Delete Lab?"
         subtitle="This action will permanently remove the lab and all associated products."
-         button={''}
+        button={''}
       />
     </div>
   );

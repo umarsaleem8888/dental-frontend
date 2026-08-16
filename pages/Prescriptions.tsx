@@ -9,16 +9,23 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import { apiDelete, apiGet, apiPost } from '@/utilz/endpoints';
 import { showToast } from '@/components/Toast';
 import Loading from '../components/Loading';
+import { usePermission } from '@/hooks/usrPermissions';
+import NoAccess from '@/components/NoAccess';
 
 const DateModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (fromDate: string, toDate: string) => void;
 }> = ({ isOpen, onClose, onConfirm }) => {
+
+
+
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
 
   if (!isOpen) return null;
+
+
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -65,6 +72,13 @@ const Prescriptions: React.FC = () => {
   const patients = useSelector((state: RootState) => state.patients.list);
   const doctors = useSelector((state: RootState) => state.doctors.list);
   const baseUrl = import.meta.env.VITE_API_URL;
+
+  const { can } = usePermission();
+  const module = "prescription";
+  const canRead = can(module, "read");
+  const canCreate = can(module, "create");
+  const canUpdate = can(module, "update");
+  const canDelete = can(module, "delete");
 
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string | null }>({
     isOpen: false,
@@ -165,7 +179,15 @@ const Prescriptions: React.FC = () => {
 
 
   const handleDelete = async () => {
-    console.log(deleteModal, 'dele mmmmmm');
+    // console.log(deleteModal, 'dele mmmmmm');
+
+    if (!canDelete) {
+      showToast({
+        text: "No Access",
+        type: "info",
+      });
+      return
+    }
 
     try {
       if (!deleteModal?.id) return;
@@ -199,8 +221,15 @@ const Prescriptions: React.FC = () => {
   const doctorOptions = doctors.map((d) => ({ value: d.id, label: d.name }));
 
   return (
-    <div className="flex gap-6 animate-in fade-in duration-500">
-      {/* Sidebar Filters */}
+
+   <>
+   
+   {
+    canRead ?
+     <div className="flex gap-6 animate-in fade-in duration-500">
+
+      
+  
       <div className="w-64 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-lg flex flex-col gap-5">
         <h3 className="text-lg font-bold mb-2">Filters</h3>
 
@@ -265,18 +294,22 @@ const Prescriptions: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-3xl font-bold">Prescriptions</h2>
-          <Link
-            to="/prescriptions/new"
-            className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg active:scale-95"
-          >
-            <FilePlus size={20} />
-            Create Prescription
-          </Link>
+          {
+            canCreate ?
+              <Link
+                to="/prescriptions/new"
+                className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg active:scale-95"
+              >
+                <FilePlus size={20} />
+                Create Prescription
+              </Link>
+              : ''
+          }
         </div>
 
         {/* Cards */}
@@ -425,13 +458,19 @@ const Prescriptions: React.FC = () => {
           onConfirm={handleDelete}
           title="Delete Prescription?"
           subtitle="This will permanently remove the medical instructions and diagnosis from the record. Historical charts will be lost."
-           button={''}
+          button={''}
         />
 
         {/* Date modal */}
         <DateModal isOpen={showDateModal} onClose={() => setShowDateModal(false)} onConfirm={handleDateApply} />
       </div>
     </div>
+    : <NoAccess module='Prescriptions'/>
+   }
+
+   </>
+
+
   );
 };
 

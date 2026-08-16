@@ -43,6 +43,7 @@ import LabProducts from './pages/LabProducts';
 import LabProductsEdit from './pages/LabProductsEdit';
 import LabProductsForm from './pages/LabProductsForm';
 import Permission from './pages/Permission';
+import Signup from './pages/singUP';
 // import Permission from './pages/Permission';
 
 // Protected Route Component
@@ -125,6 +126,7 @@ const App: React.FC = () => {
         <Route path="products/edit/:id" element={ <LabProductsEdit/> }/>
 
         <Route path="permission/" element={ <Permission/> }/>
+        <Route path='signup/' element={<Signup/>}/>
 
       </Route>
 

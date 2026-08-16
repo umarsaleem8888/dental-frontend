@@ -1,7 +1,9 @@
 import ConfirmDialog from "@/components/ConfirmDialog";
 import CustomTooltip from "@/components/CustomTooltip";
+import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
 import { showToast } from "@/components/Toast";
+import { addRoleModules, emptyRoleModules } from "@/slices/roleModulesSlice";
 import { addRole, deleteRole, emptyRole, updateRole } from "@/slices/rolesSlice";
 import { apiDelete, apiGet, apiPost, apiPut } from "@/utilz/endpoints";
 import { BookText, Check, DeleteIcon, Edit2, Eye, EyeClosed, EyeOff, FileExclamationPoint, Folder, Loader2, Minus, MousePointer2, Notebook, Octagon, OctagonAlertIcon, Pencil, Plus, Save, Trash2, X } from "lucide-react";
@@ -10,27 +12,28 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function Permission() {
 
+
+
     const baseUrl = import.meta.env.VITE_API_URL;
 
     const dispatch = useDispatch();
 
-    const GetAllRoles = useSelector((state: any) => state.roles.list);
-
-    console.log(GetAllRoles, 'alll lll ');
-
-
+    const GetAllRoles = useSelector((state: any) => state.roles.list) || [];
+    const GetAllRoleModules = useSelector((state: any) => state.modules.list) || [];
     const [allRoles, setAllRoles] = useState(GetAllRoles || []);
+    const [roleModules, setRoleModules] = useState(GetAllRoleModules || []);
 
-    console.log(allRoles,'allRoles there');
-    
+    const LoadingComponent = (
+        <div className="h-[80vh] flex items-center justify-center animate-in fade-in duration-500">
+            <Loading color={'#0ea5e9'} size="25" />
+        </div>
+    );
 
     const [editObj, setEditObj] = useState({
         id: '',
         name: '',
         roleId: ''
     });
-
-    // console.log(allRoles, 'alll')
 
     const actionIcons = {
         read: <Eye size={16} />,
@@ -70,14 +73,14 @@ export default function Permission() {
     // =========================
     // Modules
     // =========================
-    const modules = [
-        "Prescription",
-        "Invoice",
-        "Patients",
-        "Appointments",
-        "Employees",
-        "Reports",
-    ];
+    // const modules = [
+    //     "Prescription",
+    //     "Invoice",
+    //     "Patients",
+    //     "Appointments",
+    //     "Employees",
+    //     "Reports",
+    // ];
 
     // =========================
     // Permission Types
@@ -93,12 +96,7 @@ export default function Permission() {
     // =========================
     // Permissions State
     // =========================
-    const [permissions, setPermissions] = useState({
-        // "Super Admin": {},
-        // "Admin": {},
-        // "Doctor": {},
-        // "HR": {},
-    });
+    const [permissions, setPermissions] = useState<Record<string, any>>({});
 
     const [openRoleModal, setOpenRoleModal] = useState(false);
 
@@ -107,31 +105,143 @@ export default function Permission() {
     const [roleName, setRoleName] = useState("");
 
     const [loading, setLoading] = useState(false);
+    const [moduleLoading, setModuleLoading] = useState(false);
+
+    const loadRoles = async () => {
+        try {
+            setLoading(true);
+
+            const data = await fetchRoles();
+
+            // =========================
+            // Redux Roles
+            // =========================
+
+            dispatch(emptyRole());
+
+            data?.forEach((role: any) => {
+                dispatch(addRole(role));
+            });
+
+            // =========================
+            // Permissions State
+            // =========================
+
+            const permissionsState: Record<string, any> = {};
+
+            // =========================
+            // Visibility State
+            // =========================
+
+            const visibilityState: Record<
+                string,
+                Record<string, boolean>
+            > = {};
+
+            data?.forEach((role: any) => {
+
+                const roleId = role?.roleId;
+
+                permissionsState[roleId] = {};
+                visibilityState[roleId] = {};
+
+                role?.permissions?.forEach((permission: any) => {
+
+                    const moduleName = permission?.module;
+
+                    // -------------------------
+                    // Visibility
+                    // -------------------------
+
+                    visibilityState[roleId][moduleName] =
+                        Boolean(permission?.visibility);
+
+                    // -------------------------
+                    // CRUD Permissions
+                    // -------------------------
+
+                    permissionsState[roleId][moduleName] = {
+                        read: Boolean(
+                            permission?.permissions?.read
+                        ),
+
+                        create: Boolean(
+                            permission?.permissions?.create
+                        ),
+
+                        update: Boolean(
+                            permission?.permissions?.update
+                        ),
+
+                        delete: Boolean(
+                            permission?.permissions?.delete
+                        ),
+                    };
+                });
+            });
+
+            // =========================
+            // Set Frontend State
+            // =========================
+
+            setPermissions(permissionsState);
+
+            setModuleVisibility(visibilityState);
+
+            // =========================
+            // Select First Role
+            // =========================
+
+            if (data?.length > 0) {
+                setSelectedRole(data[0]?.roleId);
+                setSelectedRoleName(data[0]?.name);
+            } else {
+                setSelectedRole("");
+                setSelectedRoleName("");
+            }
+
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadModules = async () => {
+
+        try {
+
+            setModuleLoading(true);
+
+            const data = await fetchModules();
+
+            dispatch(emptyRoleModules());
+
+            data?.forEach((module: any) => {
+                dispatch(addRoleModules(module));
+            });
+
+            // Important
+            setRoleModules(data || []);
+
+        } catch (error) {
+
+            console.error(error);
+
+        } finally {
+
+            setModuleLoading(false);
+
+        }
+    };
+
+
 
     useEffect(() => {
-        const loadRoles = async () => {
-            // console.log('sdfasdfasdf');
-            
-            try {
-                setLoading(true);
-
-                const data = await fetchRoles();
-                dispatch(emptyRole());
-
-                // console.log("load date =>  : ", data);
-
-                data?.forEach((m: any) => dispatch(addRole(m)));
-
-                setSelectedRole(data[0]?.roleId);
-
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
-            }
-        };
 
         loadRoles();
+        loadModules();
+
     }, [dispatch]);
 
     const handleEditRole = (role: any) => {
@@ -142,13 +252,18 @@ export default function Permission() {
     };
 
     const [moduleVisibility, setModuleVisibility] = useState<
-        Record<string, boolean>
+        Record<string, Record<string, boolean>>
     >({});
 
     const toggleModuleVisibility = (module: string) => {
         setModuleVisibility((prev) => ({
             ...prev,
-            [module]: !prev[module],
+
+            [selectedRole]: {
+                ...prev[selectedRole],
+
+                [module]: !prev[selectedRole]?.[module],
+            },
         }));
     };
 
@@ -181,22 +296,14 @@ export default function Permission() {
 
     const handleDelete = async () => {
         try {
-            console.log('del modal : => ',deleteModal);
-            
+
             if (!deleteModal.id) return;
             const d = await apiDelete(`${baseUrl}/roles/${deleteModal.id}`);
             if (d) {
 
-                console.log( "d : => " , d);
-                
-
                 dispatch(deleteRole(deleteModal.id));
                 showToast({ text: "Deleted Successfully", type: "success" });
-
-                 setSelectedRole('');
-
-                
-
+                setSelectedRole('');
             }
         } catch (error: any) {
             showToast({ text: "Not Deleted, try again", type: "error" });
@@ -208,10 +315,22 @@ export default function Permission() {
     const fetchRoles = async (): Promise<any> => {
         const baseUrl = import.meta.env.VITE_API_URL;
         const res = await apiGet(`${baseUrl}/roles`);
- 
+
         return res?.data?.map((m: any) => ({
             id: m?._id,
             roleId: m?.roleId,
+            name: m?.name,
+            permissions: m?.permissions || []
+
+        }));
+    };
+
+    const fetchModules = async (): Promise<any> => {
+        const baseUrl = import.meta.env.VITE_API_URL;
+        const res = await apiGet(`${baseUrl}/roles/get/all/modules`);
+
+        return res?.data?.map((m: any) => ({
+            key: m?.key,
             name: m?.name
         }));
     };
@@ -219,12 +338,8 @@ export default function Permission() {
     const handleRoleAction = async (condition: string) => {
         var Res;
         if (condition == 'saveRole') {
-            // console.log('save mode');
-
             const generateRoleId = (): any => {
-
                 setLoading(true);
-
                 var roleId;
                 do {
                     roleId = Math.floor(10000 + Math.random() * 90000).toString();
@@ -241,31 +356,22 @@ export default function Permission() {
             }
             Res = await apiPost(`${baseUrl}/roles`, data);
 
-
             if (Res) {
-
-                // console.log(Res,'REs...R');
-                
-
                 const data = {
                     id: Res?.data?._id,
                     roleId: Res?.data?.roleId,
                     name: Res?.data?.name,
-
                 }
 
-                console.log(data,'dddd aaa ttt aa');
-                
-
-                if(GetAllRoles?.length <= 0){
+                if (GetAllRoles?.length <= 0) {
                     dispatch(addRole(data));
                     setSelectedRole(Res[0]?.roleId);
                 }
-                else{
-                     dispatch(addRole(data));
+                else {
+                    dispatch(addRole(data));
                 }
-                
-                
+
+
 
             }
 
@@ -275,16 +381,9 @@ export default function Permission() {
             });
 
             setLoading(false);
-
             setOpenRoleModal(false);
 
-
-            // console.log(Res, 'res of save ....');
-
-
         } else {
-
-            // console.log('edit obj : ',editObj);
 
             const data = {
                 id: editObj?.id,
@@ -292,36 +391,24 @@ export default function Permission() {
                 roleId: editObj?.roleId,
             }
 
-            // console.log('data : => ', data);
-
-
             Res = await apiPut(`${baseUrl}/roles/${editObj?.id}`, data)
 
-            // console.log(Res, 'REs of update');
-
-            // dispatch(updateRole(data));
-            
             const d = {
                 id: Res?.data?._id,
                 roleId: Res?.data?.roleId,
                 name: Res?.data?.name,
-                
+
             }
 
-            console.log('d : ',d);
-            
-            
             dispatch(updateRole(d));
             setLoading(false);
-            
+
             showToast({
                 text: "Role Updated successfully",
                 type: "success",
             });
             setLoading(false);
-
             setSelectedRoleName(d?.name)
-
             setOpenRoleModal(false);
 
         }
@@ -332,6 +419,120 @@ export default function Permission() {
         setSelectedRole(role?.roleId);
         setSelectedRoleName(role?.name)
     }
+
+    const handleSaveClick = async (roleSelectedId: any) => {
+        try {
+
+            const selectedRoleData = GetAllRoles?.find(
+                (role: any) => role?.roleId === roleSelectedId
+            );
+
+            if (!selectedRoleData?.id) {
+                showToast({
+                    text: "Role not found.",
+                    type: "error",
+                });
+                return;
+            }
+
+            const rolePermissions =
+                (permissions as any)?.[roleSelectedId] || {};
+
+            const permission = roleModules?.map((module: any) => {
+
+                const moduleKey = module?.key;
+
+                const visibility = Boolean(
+                    moduleVisibility?.[roleSelectedId]?.[moduleKey]
+                );
+
+                const modulePermission =
+                    rolePermissions?.[moduleKey] || {};
+
+                return {
+                    module: moduleKey,
+
+                    visibility,
+
+                    permissions: {
+                        read: visibility
+                            ? Boolean(modulePermission?.read)
+                            : false,
+
+                        create: visibility
+                            ? Boolean(modulePermission?.create)
+                            : false,
+
+                        update: visibility
+                            ? Boolean(modulePermission?.update)
+                            : false,
+
+                        delete: visibility
+                            ? Boolean(modulePermission?.delete)
+                            : false,
+                    },
+                };
+            });
+
+            console.log("Final Permission Payload:", {
+                permissions: permission,
+            });
+
+            setModuleLoading(true);
+
+            const Res = await apiPut(
+                `${baseUrl}/roles/${selectedRoleData.id}/permissions`,
+                {
+                    permissions: permission,
+                }
+            );
+
+            if (Res) {
+
+                showToast({
+                    text: "Permissions updated successfully.",
+                    type: "success",
+                });
+
+                // =========================
+                // Update Local State
+                // =========================
+
+                const updatedPermissions: any = {};
+
+                permission.forEach((item: any) => {
+
+                    updatedPermissions[item.module] = {
+                        read: item.permissions.read,
+                        create: item.permissions.create,
+                        update: item.permissions.update,
+                        delete: item.permissions.delete,
+                    };
+
+                });
+
+                setPermissions((prev: any) => ({
+                    ...prev,
+
+                    [roleSelectedId]: updatedPermissions,
+                }));
+            }
+
+        } catch (err) {
+
+            console.log("save err : ", err);
+
+            showToast({
+                text: "Failed to update permissions.",
+                type: "error",
+            });
+
+        } finally {
+
+            setModuleLoading(false);
+
+        }
+    };
 
     return (
         <div className="min-h-screen bg-slate-100 p-6 rounded-xl">
@@ -407,9 +608,6 @@ export default function Permission() {
 
                                 const active = selectedRole === role?.roleId;
 
-                                console.log('act : ',allRoles);
-                                
-
                                 return (
                                     <button
                                         key={role?.roleId}
@@ -452,324 +650,332 @@ export default function Permission() {
                 {/* ========================= */}
 
                 {
-                GetAllRoles && GetAllRoles?.length <=0 ? <div className="flex-full  col-span-3 text-[24px] bold gap-4 flex-col flex justify-center items-center" > <p> module not found </p>  <OctagonAlertIcon size={40} /> </div>
-                    :
+                    !GetAllRoles || GetAllRoles.length === 0 ? (
 
-                    selectedRole ?
-
-                <div className="lg:col-span-3 bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-
-                    <div className="flex items-center justify-between mb-8">
-
-                        <div>
-                            <h2
-                                className={`
-                                             text-blue-500 text-2xl font-bold
-                                             transition-all duration-300 ease-in-out
-                                             opacity-100 translate-y-0
-                                           `}
-                                key={selectedRole}
-                            >
-                                {selectedRoleName} Permissions
-                            </h2>
-
-                            <p className="text-slate-500 mt-1">
-                                Manage module access
-                            </p>
+                        // No roles
+                        <div className="text-[24px] font-bold col-span-3 flex flex-col justify-center items-center">
+                            <p>Modules not found</p>
                         </div>
 
-                        <button
-                            className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold flex gap-2"
-                        >
-                            Save <Save size={18} />
-                        </button>
-                    </div>
+                    ) : !selectedRole ? (
 
-                    {/* Modules */}
-                    <div className="  space-y-5 ">
+                        // No role selected
+                        <div className="text-[24px] font-bold col-span-3 flex flex-col justify-center items-center">
+                            <p>Please Select the Role</p>
+                            <MousePointer2 size={40} />
+                        </div>
 
-                        {modules?.map((module) => (
-                            <div
-                                key={module}
-                                className="rounded-2xl bg-white shadow-md hover:shadow-lg transition-all duration-300 p-6"
-                            >
-                                {/* Module Header */}
-                                <div className="flex items-center justify-between mb-4 border-b pb-4">
+                    ) : moduleLoading ? (
 
-                                    <div className="flex items-center gap-3">
+                        // Modules loading
+                        <div className="text-[24px] font-bold col-span-3 flex flex-col justify-center items-center">
+                            {LoadingComponent}
+                        </div>
 
-                                        <div className="h-11 w-11 rounded-xl bg-blue-100 flex items-center justify-center">
-                                            <Folder className="text-blue-600" size={22} />
-                                        </div>
+                    ) : (
 
-                                        <div>
-                                            <h3 className="font-bold text-lg">
-                                                {module}
-                                            </h3>
+                        // Permissions UI
+                        <div className="lg:col-span-3 bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
 
-                                            <p className="text-sm text-slate-500">
-                                                Manage {module} permissions
-                                            </p>
-                                        </div>
+                            <div className="flex items-center justify-between mb-8">
 
-                                    </div>
-
-                                    <button
-                                        onClick={() => toggleModule(module)}
-                                        className="
-            h-10
-            w-10
-            rounded-xl
-            bg-slate-100
-            hover:bg-blue-100
-            transition-all
-            duration-300
-            flex
-            items-center
-            justify-center
-        "
+                                <div>
+                                    <h2
+                                        className="text-blue-500 text-2xl font-bold"
+                                        key={selectedRole}
                                     >
-                                        <div
-                                            className="
-                transition-all
-                duration-300
-            "
-                                        >
-                                            {expandedModules[module] ? (
-                                                <Minus className="text-blue-600" size={20} />
-                                            ) : (
-                                                <Plus className="text-blue-600" size={20} />
-                                            )}
-                                        </div>
-                                    </button>
+                                        {selectedRoleName} Permissions
+                                    </h2>
 
+                                    <p className="text-slate-500 mt-1">
+                                        Manage module access
+                                    </p>
                                 </div>
 
-                                {/* visibility //// */}
-
-                                <div className="mb-6 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 transition-all duration-300 hover:border-blue-200 hover:bg-blue-50">
-
-                                    <div className="flex items-center gap-3">
-
-                                        <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                                            <Eye size={18} className="text-blue-600" />
-                                        </div>
-
-                                        <div>
-                                            <h4 className="font-semibold text-slate-800">
-                                                Module Visibility
-                                            </h4>
-
-                                            <p className="text-xs text-slate-500">
-                                                Control whether this module appears for the selected role.
-                                            </p>
-                                        </div>
-
-                                    </div>
-
-                                    {/* Switch */}
-
-                                    <button
-                                        onClick={() => toggleModuleVisibility(module)}
-                                        className={`
-        relative
-        h-7
-        w-14
-        rounded-full
-        transition-all
-        duration-300
-        ${moduleVisibility[module]
-                                                ? "bg-green-500"
-                                                : "bg-slate-300"
-                                            }
-    `}
-                                    >
-                                        <div
-                                            className={`
-            absolute
-            top-1
-            h-5
-            w-5
-            rounded-full
-            bg-white
-            shadow-md
-            transition-all
-            duration-300
-            flex
-            items-center
-            justify-center
-            ${moduleVisibility[module]
-                                                    ? "translate-x-8"
-                                                    : "translate-x-1"
-                                                }
-        `}
-                                        >
-                                            {moduleVisibility[module] ? (
-                                                <Eye
-                                                    size={12}
-                                                    className="text-green-600 transition-all duration-300"
-                                                />
-                                            ) : (
-                                                <EyeClosed
-                                                    size={12}
-                                                    className="text-slate-500 transition-all duration-300"
-                                                />
-                                            )}
-                                        </div>
-                                    </button>
-
-                                </div>
-
-                                {/* //// */}
-
-                                {/* Actions */}
-
-                                {/* //// */}
-
-                                <div
-                                    className={`
-                                                overflow-hidden
-                                                transition-all
-                                                duration-500
-                                                ease-in-out
-                                                ${expandedModules[module]
-                                            ? "max-h-[500px] opacity-100 mt-4"
-                                            : "max-h-0 opacity-0"
-                                        }
-                                          `}
+                                <button
+                                    disabled={moduleLoading}
+                                    onClick={() => handleSaveClick(selectedRole)}
+                                    className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold flex gap-2 items-center disabled:opacity-50"
                                 >
-                                    <div
-                                        className={`
-         
-            transition-all
-            duration-300
-            ${moduleVisibility[module]
-                                                ? "opacity-100"
-                                                : "opacity-40 pointer-events-none"
-                                            }
-        `}
-                                    >
-
-
-                                        <div className="   grid grid-cols-2 md:grid-cols-4 gap-4">
-                                            {actions?.map((action) => {
-
-                                                const active = (permissions as any)?.[selectedRole]?.[module]?.[action];
-
-                                                // console.log(active, ' active');
-
-
-                                                return (
-
-                                                    <CustomTooltip
-                                                        content={actionTooltips[action]}
-                                                    >
-
-                                                        <button
-                                                            key={action}
-                                                            onClick={() => togglePermission(module, action)}
-                                                            className={`
-        group
-        relative
-        rounded-xl
-        border
-        px-4
-        py-3
-        transition-all
-        duration-300
-        flex
-        items-center
-        justify-between
-        hover:scale-[1.03]
-        ${active
-                                                                    ? "border-green-200 bg-green-50"
-                                                                    : "border-slate-200 bg-white"
-                                                                }
-    `}
-                                                        >
-
-
-                                                            <div
-                                                                className="
-            pointer-events-none
-            absolute
-            -top-12
-            left-1/2
-            -translate-x-1/2
-            whitespace-nowrap
-            rounded-lg
-            bg-slate-900
-            px-3
-            py-2
-            text-xs
-            text-white
-            opacity-0
-            transition-all
-            duration-200
-            group-hover:opacity-100
-            group-hover:-translate-y-1
-            shadow-lg
-            z-50
-        "
-                                                            >
-                                                                {actionTooltips[action] ?? `Manage ${action} permission`}
-
-
-                                                                <div
-                                                                    className="
-                absolute
-                left-1/2
-                top-full
-                -translate-x-1/2
-                border-4
-                border-transparent
-                border-t-slate-900
-            "
-                                                                />
-                                                            </div>
-
-                                                            <div className="flex items-center gap-2">
-                                                                {actionIcons[action as keyof typeof actionIcons] ?? (
-                                                                    <Folder size={16} />
-                                                                )}
-
-                                                                <span className="capitalize font-medium">
-                                                                    {action}
-                                                                </span>
-                                                            </div>
-
-                                                            {active ? (
-                                                                <div className="h-7 w-7 rounded-full bg-green-500 flex items-center justify-center">
-                                                                    <Check size={15} className="text-white" />
-                                                                </div>
-                                                            ) : (
-                                                                <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center">
-                                                                    <X size={15} className="text-white" />
-                                                                </div>
-                                                            )}
-                                                        </button>
-
-                                                    </CustomTooltip>
-
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                </div>
-
-
+                                    {moduleLoading ? (
+                                        "Saving..."
+                                    ) : (
+                                        <>
+                                            Save
+                                            <Save size={18} />
+                                        </>
+                                    )}
+                                </button>
 
                             </div>
-                        ))}
 
-                    </div>
-                </div>
-                : 
-                <div className=" text-[24px] bold col-span-3 flex flex-col justify-center items-center" >
-                      <p>Please Select the Role</p>
-                      <MousePointer2 size={40} />
-                </div>
+                            {/* Modules */}
+                            <div className="space-y-5">
+
+                                {roleModules?.length === 0 ? (
+
+                                    <div className="text-center py-10 text-slate-500">
+                                        Modules not found.
+                                    </div>
+
+                                ) : (
+
+                                    roleModules?.map((module: any) => (
+
+                                        <div
+                                            key={module?.key}
+                                            className="rounded-2xl bg-white shadow-md hover:shadow-lg transition-all duration-300 p-6"
+                                        >
+
+                                            {/* Module Header */}
+                                            <div className="flex items-center justify-between mb-4 border-b pb-4">
+
+                                                <div className="flex items-center gap-3">
+
+                                                    <div className="h-11 w-11 rounded-xl bg-blue-100 flex items-center justify-center">
+                                                        <Folder
+                                                            className="text-blue-600"
+                                                            size={22}
+                                                        />
+                                                    </div>
+
+                                                    <div>
+                                                        <h3 className="font-bold text-lg">
+                                                            {module?.name}
+                                                        </h3>
+
+                                                        <p className="text-sm text-slate-500">
+                                                            Manage {module?.name} permissions
+                                                        </p>
+                                                    </div>
+
+                                                </div>
+
+                                                <button
+                                                    onClick={() => toggleModule(module?.key)}
+                                                    className="
+                                        h-10
+                                        w-10
+                                        rounded-xl
+                                        bg-slate-100
+                                        hover:bg-blue-100
+                                        transition-all
+                                        duration-300
+                                        flex
+                                        items-center
+                                        justify-center
+                                    "
+                                                >
+                                                    {expandedModules[module?.key] ? (
+                                                        <Minus
+                                                            className="text-blue-600"
+                                                            size={20}
+                                                        />
+                                                    ) : (
+                                                        <Plus
+                                                            className="text-blue-600"
+                                                            size={20}
+                                                        />
+                                                    )}
+                                                </button>
+
+                                            </div>
+
+                                            {/* Module Visibility */}
+                                            <div className="mb-6 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 transition-all duration-300 hover:border-blue-200 hover:bg-blue-50">
+
+                                                <div className="flex items-center gap-3">
+
+                                                    <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                                        <Eye
+                                                            size={18}
+                                                            className="text-blue-600"
+                                                        />
+                                                    </div>
+
+                                                    <div>
+                                                        <h4 className="font-semibold text-slate-800">
+                                                            Module Visibility
+                                                        </h4>
+
+                                                        <p className="text-xs text-slate-500">
+                                                            Control whether this module appears for the selected role.
+                                                        </p>
+                                                    </div>
+
+                                                </div>
+
+                                                <button
+                                                    onClick={() =>
+                                                        toggleModuleVisibility(module?.key)
+                                                    }
+                                                    className={`
+                                        relative
+                                        h-7
+                                        w-14
+                                        rounded-full
+                                        transition-all
+                                        duration-300
+                                        ${moduleVisibility[selectedRole]?.[module?.key]
+                                                            ? "bg-green-500"
+                                                            : "bg-slate-300"
+                                                        }
+                                    `}
+                                                >
+                                                    <div
+                                                        className={`
+                                            absolute
+                                            top-1
+                                            h-5
+                                            w-5
+                                            rounded-full
+                                            bg-white
+                                            shadow-md
+                                            transition-all
+                                            duration-300
+                                            flex
+                                            items-center
+                                            justify-center
+                                            ${moduleVisibility[selectedRole]?.[module?.key]
+                                                                ? "translate-x-8"
+                                                                : "translate-x-1"
+                                                            }
+                                        `}
+                                                    >
+                                                        {moduleVisibility[selectedRole]?.[module?.key] ? (
+                                                            <Eye
+                                                                size={12}
+                                                                className="text-green-600"
+                                                            />
+                                                        ) : (
+                                                            <EyeClosed
+                                                                size={12}
+                                                                className="text-slate-500"
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </button>
+
+                                            </div>
+
+                                            {/* Actions */}
+                                            <div
+                                                className={`
+                                    overflow-hidden
+                                    transition-all
+                                    duration-500
+                                    ease-in-out
+                                    ${expandedModules[module?.key]
+                                                        ? "max-h-[500px] opacity-100 mt-4"
+                                                        : "max-h-0 opacity-0"
+                                                    }
+                                `}
+                                            >
+                                                <div
+                                                    className={`
+                                        transition-all
+                                        duration-300
+                                        ${moduleVisibility[selectedRole]?.[module?.key]
+                                                            ? "opacity-100"
+                                                            : "opacity-40 pointer-events-none"
+                                                        }
+                                    `}
+                                                >
+
+                                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                                                        {actions?.map((action) => {
+
+                                                            const active =
+                                                                (permissions as any)?.[
+                                                                selectedRole
+                                                                ]?.[module?.key]?.[action];
+
+                                                            return (
+                                                                <CustomTooltip
+                                                                    key={action}
+                                                                    content={
+                                                                        actionTooltips[action]
+                                                                    }
+                                                                >
+
+                                                                    <button
+                                                                        onClick={() =>
+                                                                            togglePermission(
+                                                                                module?.key,
+                                                                                action
+                                                                            )
+                                                                        }
+                                                                        className={`
+                                                            group
+                                                            relative
+                                                            rounded-xl
+                                                            border
+                                                            px-4
+                                                            py-3
+                                                            transition-all
+                                                            duration-300
+                                                            flex
+                                                            items-center
+                                                            justify-between
+                                                            hover:scale-[1.03]
+                                                            ${active
+                                                                                ? "border-green-200 bg-green-50"
+                                                                                : "border-slate-200 bg-white"
+                                                                            }
+                                                        `}
+                                                                    >
+
+                                                                        <div className="flex items-center gap-2">
+
+                                                                            {actionIcons[
+                                                                                action as keyof typeof actionIcons
+                                                                            ] ?? (
+                                                                                    <Folder size={16} />
+                                                                                )}
+
+                                                                            <span className="capitalize font-medium">
+                                                                                {action}
+                                                                            </span>
+
+                                                                        </div>
+
+                                                                        {active ? (
+                                                                            <div className="h-7 w-7 rounded-full bg-green-500 flex items-center justify-center">
+                                                                                <Check
+                                                                                    size={15}
+                                                                                    className="text-white"
+                                                                                />
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center">
+                                                                                <X
+                                                                                    size={15}
+                                                                                    className="text-white"
+                                                                                />
+                                                                            </div>
+                                                                        )}
+
+                                                                    </button>
+
+                                                                </CustomTooltip>
+                                                            );
+                                                        })}
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    ))
+                                )}
+
+                            </div>
+
+                        </div>
+                    )
                 }
 
             </div>

@@ -22,9 +22,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
   return (
+    <>  
+    <div className='border border-green-900 bg-green-500 z-[99999]' >
     <div 
     // style={{border:'solid 1px red'}} 
-    className="fixed inset-0 z-100 flex items-center justify-center p-4 h-[100%]">
+    className="fixed inset-0 flex items-center justify-center p-4 h-[100%]">
       <div 
         // style={{border: 'solid 2px green'}}
         className=" absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200"
@@ -45,6 +47,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
         </div>
       </div>
     </div>
+    </div>
+    </>
   );
 };
 

@@ -2,13 +2,15 @@ import React, { useState, Suspense, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../app/store';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Plus, Trash2, Pill, Edit2 } from 'lucide-react';
+import { Search, Plus, Trash2, Pill, Edit2, EyeOff, EyeOffIcon } from 'lucide-react';
 import { addMedicine, deleteMedicine, emptyMedicine } from '../slices/medicinesSlice';
 import { apiGet, apiDelete } from '@/utilz/endpoints';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import Loading from '../components/Loading';
 import { showToast } from '@/components/Toast';
 import { currency } from '@/utilz/currency';
+import { usePermission } from '@/hooks/usrPermissions';
+import NoAccess from '@/components/NoAccess';
 
 interface Medicine {
   id: string;
@@ -31,6 +33,13 @@ const fetchMedicines = async (): Promise<Medicine[]> => {
 };
 
 const MedicinesComponent: React.FC = () => {
+
+  const { can } = usePermission();
+  const canReadMedicines = can("medicines", "read");
+  const canCreateMedicine = can("medicines", "create");
+  const canUpdateMedicine = can("medicines", "update");
+  const canDeleteMedicine = can("medicines", "delete");
+
   const dispatch = useDispatch();
   const medicines = useSelector((state: RootState) => state.medicines.list);
 
@@ -58,7 +67,7 @@ const MedicinesComponent: React.FC = () => {
         const data = await fetchMedicines();
 
         // console.log("date : ",data);
-        
+
 
         data?.forEach((m) => dispatch(addMedicine(m)));
       } catch (error) {
@@ -79,6 +88,15 @@ const MedicinesComponent: React.FC = () => {
 
   const handleDelete = async () => {
     try {
+
+      if (!canDeleteMedicine) {
+        showToast({
+          text: "No Access",
+          type: "info",
+        });
+        return
+      }
+
       const id = deleteModal.id;
       if (!id) return;
 
@@ -154,6 +172,8 @@ const MedicinesComponent: React.FC = () => {
     );
   }
 
+
+
   return (
     <>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -164,110 +184,130 @@ const MedicinesComponent: React.FC = () => {
               Manage prescription drugs and pricing.
             </p>
           </div>
-          <Link
-            to="/medicines/new"
-            className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg active:scale-95"
-          >
-            <Plus size={20} /> New Medicine
-          </Link>
+          {
+            canCreateMedicine ?
+              <Link
+                to="/medicines/new"
+                className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg active:scale-95"
+              >
+                <Plus size={20} /> New Medicine
+              </Link>
+              : ''
+          }
         </div>
 
-        <div className="card-surface-transition rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-          <div className="p-4 border-b border-slate-200 dark:border-slate-800">
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <input
-                type="text"
-                placeholder="Search medicines..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-2.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-primary-500/20 transition-all"
-              />
-            </div>
-          </div>
+        {
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-
-              <thead className=" border-b border-slate-200 dark:border-slate-800">
-                <tr className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  <th className="px-6 py-3">Name</th>
-                  <th className="px-6 py-3">Category</th>
-                  <th className="px-6 py-3">Type</th>
-                  <th className="px-6 py-3">Price</th>
-                  <th className="px-6 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {paginatedMedicines && paginatedMedicines.length ? paginatedMedicines?.map((med: any) => (
-                  <tr key={med?.id || med?._id} className="hover:bg-primary-500/5 transition-colors">
-                    <td className="px-6 py-4 font-bold">{med?.name}</td>
-                    <td className="px-6 py-4">{med?.category}</td>
-                    <td className="px-6 py-4">{med?.type}</td>
-                    <td className="px-6 py-4">{currency('PKR')} {med?.price.toFixed(2)}</td>
-                    <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => navigate(`/medicines/edit/${med?.id || med?._id}`)}
-                        className="mr-3"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-
-                      <button onClick={() => setDeleteModal({ isOpen: true, id: med?.id || med?._id })}>
-                        <Trash2 size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                )) : <div className="w-full flex justify-center p-[50px] text-blue-900" >No Medicines Found</div>}
-              </tbody>
-            </table>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 dark:border-slate-800">
-
-                {/* Previous */}
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                  className="px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  Previous
-                </button>
-
-                {/* Page Numbers */}
-                <div className="flex gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-1 rounded-lg text-sm font-medium transition-all
-            ${currentPage === page
-                          ? 'bg-primary-600 text-white shadow'
-                          : 'hover:bg-slate-100 dark:hover:bg-slate-800'
-                        }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
+          canReadMedicines ?
+            <div className="card-surface-transition rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+              <div className="p-4 border-b border-slate-200 dark:border-slate-800">
+                <div className="relative max-w-md">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  <input
+                    type="text"
+                    placeholder="Search medicines..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-2.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-primary-500/20 transition-all"
+                  />
                 </div>
-
-                {/* Next */}
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                  className="px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  Next
-                </button>
               </div>
-            )}
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+
+                  <thead className=" border-b border-slate-200 dark:border-slate-800">
+                    <tr className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      <th className="px-6 py-3">Name</th>
+                      <th className="px-6 py-3">Category</th>
+                      <th className="px-6 py-3">Type</th>
+                      <th className="px-6 py-3">Price</th>
+                      <th className="px-6 py-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {paginatedMedicines && paginatedMedicines.length ? paginatedMedicines?.map((med: any) => (
+                      <tr key={med?.id || med?._id} className="hover:bg-primary-500/5 transition-colors">
+                        <td className="px-6 py-4 font-bold">{med?.name}</td>
+                        <td className="px-6 py-4">{med?.category}</td>
+                        <td className="px-6 py-4">{med?.type}</td>
+                        <td className="px-6 py-4">{currency('PKR')} {med?.price.toFixed(2)}</td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={() =>
+                              canUpdateMedicine ?
+                                navigate(`/medicines/edit/${med?.id || med?._id}`)
+                                :
+                                showToast({
+                                  text: "No Access",
+                                  type: "info",
+                                })
+                            }
+                            className="mr-3"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+
+                          <button onClick={() => setDeleteModal({ isOpen: true, id: med?.id || med?._id })}>
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    )) : <div className="w-full flex justify-center p-[50px] text-blue-900" >No Medicines Found</div>}
+                  </tbody>
+                </table>
+
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 dark:border-slate-800">
+
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                      className="px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      Previous
+                    </button>
 
 
-          </div>
-        </div>
-      </div>
+                    <div className="flex gap-2">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-all
+            ${currentPage === page
+                              ? 'bg-primary-600 text-white shadow'
+                              : 'hover:bg-slate-100 dark:hover:bg-slate-800'
+                            }`}
+                        >
+                          {page}
+                        </button>
+                      ))}
+                    </div>
+
+
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                      className="px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+
+
+              </div>
+
+
+            </div>
+            :
+            <NoAccess module='Medicines' />
+        }
+
+
+      </div >
 
       <ConfirmDialog
         isOpen={deleteModal.isOpen}

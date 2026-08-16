@@ -28,10 +28,19 @@ import Loading from '../components/Loading';
 import InvoiceFilter from '@/components/InvoiceFilters';
 import InvoiceForm from './InvoiceForm';
 import { currency } from '@/utilz/currency';
+import { usePermission } from '@/hooks/usrPermissions';
+import NoAccess from '@/components/NoAccess';
 
 const Invoices: React.FC = () => {
 
     // const navigate = useNavigate();
+
+    const { can } = usePermission();
+    const module = "invoice";
+    const canRead = can(module, "read");
+    const canCreate = can(module, "create");
+    const canUpdate = can(module, "update");
+    const canDelete = can(module, "delete");
 
     const [filterState, setFilterState] = useState(() => {
         return localStorage.getItem("patient_filter_type") || "today";
@@ -105,8 +114,8 @@ const Invoices: React.FC = () => {
         // const res = await apiGet(`${baseUrl}/invoice/all/`);
 
         return res?.map((i: any) => {
-            const p = patients?.find((p:any) => p?.id === i?.patientId);
-            const d = doctors.find((d:any) => d?.id === i.doctorId);
+            const p = patients?.find((p: any) => p?.id === i?.patientId);
+            const d = doctors.find((d: any) => d?.id === i.doctorId);
 
             return {
                 id: i?._id,
@@ -125,7 +134,7 @@ const Invoices: React.FC = () => {
                 items: i?.items,
                 checkupFee: i?.checkupFee,
                 date: i?.createdAt
-                    ? new Date(i.createdAt).toISOString().split('T')[0] 
+                    ? new Date(i.createdAt).toISOString().split('T')[0]
                     : null,
             };
         });
@@ -183,6 +192,15 @@ const Invoices: React.FC = () => {
 
     /* ---------------- DELETE ---------------- */
     const handleDelete = async () => {
+
+        if (!canDelete) {
+            showToast({
+                text: "No Access",
+                type: "info",
+            });
+            return
+        }
+
         try {
             if (!deleteModal.id) return;
             const res = await apiDelete(`${baseUrl}/invoice/${deleteModal.id}`);
@@ -208,146 +226,171 @@ const Invoices: React.FC = () => {
                     <p className="text-slate-500">Billing & financial records</p>
                 </div>
 
-                <Link
-                    to="/invoices/new"
-                    className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg active:scale-95"
-                >
-                    <Receipt size={20} /> New Invoice
-                </Link>
+                {
+                    canCreate ?
+
+                        <Link
+                            to="/invoices/new"
+                            className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg active:scale-95"
+                        >
+                            <Receipt size={20} /> New Invoice
+                        </Link>
+
+                        : ''
+
+                }
+
             </div>
 
             {/* SEARCH */}
             <div className="bg-white rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-                <div className="p-4 border-b flex gap-4 items-center">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Search invoice, patient or status..."
-                            value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-slate-800 rounded-xl py-2.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-primary-500/20"
-                        />
-                    </div>
-                    <div>
-                        <InvoiceFilter handleTypeChange={handleTypeChange} />
-                    </div>
-                </div>
 
-                {/* TABLE */}
-                <div className="overflow-x-auto bg-white">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="bg-slate-50 dark:bg-slate-800">
-                                {/* <th className="px-6 py-4 text-xs font-bold uppercase">Invoice</th> */}
-                                <th className="px-6 py-4 text-xs font-bold uppercase text-[#727c8d]">Patient</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase text-[#727c8d]">Paid</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase text-[#727c8d]">Total</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase text-[#727c8d]">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase text-right text-[#727c8d]">Actions</th>
-                            </tr>
-                        </thead>
+                <>
 
-                        <tbody className="divide-y">
-                            {currentInvoices?.map((inv: any) => (
-                                <tr key={inv?.id} className="hover:bg-primary-500/5">
-                                    {/* <td className="px-6 py-4 font-bold flex items-center gap-2">
+                    {
+                        canRead ?
+                            <>
+
+                                <div className="p-4 border-b flex gap-4 items-center">
+                                    <div className="relative flex-1">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                        <input
+                                            type="text"
+                                            placeholder="Search invoice, patient or status..."
+                                            value={searchTerm}
+                                            onChange={e => setSearchTerm(e.target.value)}
+                                            className="w-full bg-slate-50 dark:bg-slate-800 rounded-xl py-2.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-primary-500/20"
+                                        />
+                                    </div>
+                                    <div>
+                                        <InvoiceFilter handleTypeChange={handleTypeChange} />
+                                    </div>
+                                </div>
+
+
+                                <div className="overflow-x-auto bg-white">
+                                    <table className="w-full text-left">
+                                        <thead>
+                                            <tr className="bg-slate-50 dark:bg-slate-800">
+                                                {/* <th className="px-6 py-4 text-xs font-bold uppercase">Invoice</th> */}
+                                                <th className="px-6 py-4 text-xs font-bold uppercase text-[#727c8d]">Patient</th>
+                                                <th className="px-6 py-4 text-xs font-bold uppercase text-[#727c8d]">Paid</th>
+                                                <th className="px-6 py-4 text-xs font-bold uppercase text-[#727c8d]">Total</th>
+                                                <th className="px-6 py-4 text-xs font-bold uppercase text-[#727c8d]">Status</th>
+                                                <th className="px-6 py-4 text-xs font-bold uppercase text-right text-[#727c8d]">Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody className="divide-y">
+                                            {currentInvoices?.map((inv: any) => (
+                                                <tr key={inv?.id} className="hover:bg-primary-500/5">
+                                                    {/* <td className="px-6 py-4 font-bold flex items-center gap-2">
                                         <FileText size={16} />
                                         {inv?.id}
                                     </td> */}
 
-                                    <td className="px-6 py-4">{inv?.patient?.name || 'UnKown'}</td>
+                                                    <td className="px-6 py-4">{inv?.patient?.name || 'UnKown'}</td>
 
 
 
-                                    <td className="px-6 py-4 font-bold text-emerald-600">
-                                        {currency('PKR')}
-                                        {inv?.paidAmount}
-                                    </td>
+                                                    <td className="px-6 py-4 font-bold text-emerald-600">
+                                                        {currency('PKR')}
+                                                        {inv?.paidAmount}
+                                                    </td>
 
-                                    <td className="px-6 py-4 font-bold text-emerald-600">
-                                        {currency('PKR')}
-                                        {inv?.totalAmount}
-                                    </td>
+                                                    <td className="px-6 py-4 font-bold text-emerald-600">
+                                                        {currency('PKR')}
+                                                        {inv?.totalAmount}
+                                                    </td>
 
-                                    <td className="px-6 py-4">
-                                        <span
-                                            className={`px-3 py-1 rounded-full text-xs font-bold
+                                                    <td className="px-6 py-4">
+                                                        <span
+                                                            className={`px-3 py-1 rounded-full text-xs font-bold
                                                     ${inv?.status === 'Paid'
-                                                    ? 'bg-emerald-100 text-emerald-700'
-                                                    : 'bg-amber-100 text-amber-700'
-                                                }`}
-                                        >
-                                            {inv?.status}
-                                        </span>
-                                    </td>
+                                                                    ? 'bg-emerald-100 text-emerald-700'
+                                                                    : 'bg-amber-100 text-amber-700'
+                                                                }`}
+                                                        >
+                                                            {inv?.status}
+                                                        </span>
+                                                    </td>
 
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Link to={`/invoices/edit/${inv?.id}`} className="p-2 hover:text-amber-500">
-                                                <Edit2 color='#a5b1c3' size={18} />
-                                            </Link>
-                                            {/* <Link to={`/invoices/edit/${inv?.id}`} className="p-2 hover:text-primary-500">
+                                                    <td className="px-6 py-4 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            {
+                                                                canUpdate ?
+                                                                    <Link to={`/invoices/edit/${inv?.id}`} className="p-2 hover:text-amber-500">
+                                                                        <Edit2 color='#a5b1c3' size={18} />
+                                                                    </Link>
+                                                                    : ''
+                                                            }
+                                                            {/* <Link to={`/invoices/edit/${inv?.id}`} className="p-2 hover:text-primary-500">
                                                 <ExternalLink color='#a5b1c3' size={18} />
                                             </Link> */}
-                                            <Link to={`/invoices/view/${inv?.id}`} className="p-2 hover:text-primary-500">
-                                                <Eye color='#a5b1c3' size={18} />
-                                            </Link>
+                                                            <Link to={`/invoices/view/${inv?.id}`} className="p-2 hover:text-primary-500">
+                                                                <Eye color='#a5b1c3' size={18} />
+                                                            </Link>
+                                                            <button
+                                                                onClick={() => setDeleteModal({ isOpen: true, id: inv.id })}
+                                                                className="p-2 hover:text-rose-500"
+                                                            >
+                                                                <Trash2 color='#a5b1c3' size={18} />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+
+                                    {filteredInvoices.length === 0 && (
+                                        <div className="py-20 text-center text-slate-500">
+                                            No invoices found.
+                                        </div>
+                                    )}
+
+                                    {/* PAGINATION */}
+                                    {totalPages > 1 && (
+                                        <div className="flex justify-between px-6 py-4 border-t">
                                             <button
-                                                onClick={() => setDeleteModal({ isOpen: true, id: inv.id })}
-                                                className="p-2 hover:text-rose-500"
+                                                disabled={currentPage === 1}
+                                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                                className="px-4 py-2 border rounded-lg disabled:opacity-40"
                                             >
-                                                <Trash2 color='#a5b1c3' size={18} />
+                                                Previous
+                                            </button>
+
+                                            <div className="flex gap-2">
+                                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                                                    <button
+                                                        key={p}
+                                                        onClick={() => setCurrentPage(p)}
+                                                        className={`px-3 py-1 rounded-lg ${p === currentPage
+                                                            ? 'bg-primary-600 text-white'
+                                                            : 'hover:bg-slate-100'
+                                                            }`}
+                                                    >
+                                                        {p}
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            <button
+                                                disabled={currentPage === totalPages}
+                                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                                className="px-4 py-2 border rounded-lg disabled:opacity-40"
+                                            >
+                                                Next
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                    )}
+                                </div>
+                            </>
+                            : <NoAccess module='Invoices' />
+                    }
 
-                    {filteredInvoices.length === 0 && (
-                        <div className="py-20 text-center text-slate-500">
-                            No invoices found.
-                        </div>
-                    )}
 
-                    {/* PAGINATION */}
-                    {totalPages > 1 && (
-                        <div className="flex justify-between px-6 py-4 border-t">
-                            <button
-                                disabled={currentPage === 1}
-                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                className="px-4 py-2 border rounded-lg disabled:opacity-40"
-                            >
-                                Previous
-                            </button>
-
-                            <div className="flex gap-2">
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                                    <button
-                                        key={p}
-                                        onClick={() => setCurrentPage(p)}
-                                        className={`px-3 py-1 rounded-lg ${p === currentPage
-                                            ? 'bg-primary-600 text-white'
-                                            : 'hover:bg-slate-100'
-                                            }`}
-                                    >
-                                        {p}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <button
-                                disabled={currentPage === totalPages}
-                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                className="px-4 py-2 border rounded-lg disabled:opacity-40"
-                            >
-                                Next
-                            </button>
-                        </div>
-                    )}
-                </div>
+                </>
             </div>
 
             <ConfirmDialog
@@ -356,7 +399,7 @@ const Invoices: React.FC = () => {
                 onConfirm={handleDelete}
                 title="Delete Invoice?"
                 subtitle="This action cannot be undone."
-                 button={''}
+                button={''}
             />
         </div>
     );
