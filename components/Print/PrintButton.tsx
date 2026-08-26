@@ -15,11 +15,11 @@ const PrintButton: React.FC<Props> = ({ onPrint }) => {
         gap-2
         rounded-lg
         bg-sky-600
+        hover:bg-sky-700
         px-4
         py-2
         text-white
         transition
-        hover:bg-sky-700
       "
     >
       <Printer size={18} />

@@ -659,7 +659,7 @@ const InvoiceForm: React.FC = () => {
                   </div>
                   :
                   <>
-                    <FilePlus size={20} /> Finalize Prescription
+                    <FilePlus size={20} /> Finalize Invoice
                   </>
               }
             </button>

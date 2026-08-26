@@ -47,6 +47,9 @@ const PrescriptionView: React.FC = () => {
   const patient = patients.find(p => p.id === prescription.patientId);
   const doctor = doctors.find(d => d.id === prescription.doctorId);
 
+  // console.log(patient , doctor , 'p and d');
+  
+
   // const handlePrint = () => {
   //   window.print();
   // };
@@ -84,7 +87,7 @@ const PrescriptionView: React.FC = () => {
       >
         <div ref={printRef}>
 
-          <PrescriptionTemp1 patient={patient} doctor={doctor} prescription={prescription} />
+          <PrescriptionTemp1 display={true} patient={patient} doctor={doctor} prescription={prescription} />
 
         </div>
 

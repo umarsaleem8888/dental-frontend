@@ -1,20 +1,29 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../app/store';
 import { addPrescription } from '../slices/prescriptionsSlice';
-import { Prescription, PrescribedMedicine } from '../types';
+import { Prescription, PrescribedMedicine, Patient, Doctor } from '../types';
 import DentalChart from '../components/DentalChart';
-import { ArrowLeft, PlusCircle, Trash2, FilePlus, Pill, Plus, Calendar, Clock, Loader2, Eye } from 'lucide-react';
+import { ArrowLeft, PlusCircle, Trash2, FilePlus, Pill, Plus, Calendar, Clock, Loader2, Eye, Printer } from 'lucide-react';
 import { apiPost } from '@/utilz/endpoints';
 import { showToast } from '@/components/Toast';
 // import ImageViewer from "@/components/ImagePopUp";
 import { currency } from '@/utilz/currency';
 import Select from 'react-select';
 import ImageSlider from '../components/ImageSlider';
+import { PrintWrapper } from '@/components/Print';
+import PrescriptionTemp1 from './PrescriptionTemp1';
+import usePrint from '@/hooks/usePrint';
 
 const PrescriptionForm: React.FC = () => {
+
+  const printRef = useRef<HTMLDivElement>(null);
+  const handlePrint = usePrint(printRef);
+
+  // const patient = patients.find(p => p.id === prescription.patientId);
+  // const doctor = doctors.find(d => d.id === prescription.doctorId);
 
   const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -23,13 +32,15 @@ const PrescriptionForm: React.FC = () => {
   const dispatch = useDispatch();
 
   const patients = useSelector((state: RootState) => state.patients.list);
+
   const doctors = useSelector((state: RootState) => state.doctors.list);
   const medicines = useSelector((state: RootState) => state.medicines.list);
 
   const medicineOptions =
     medicines?.map((m) => ({
       value: m.id,
-      label: `${m.name} (${currency("PKR")} ${m.price.toFixed(2)})`,
+      // label: `${m.name} (${currency("PKR")} ${m.price.toFixed(2)})`,
+      label: `${m.name}`
     })) || [];
 
   // const [xrayPreview, setXrayPreview] = useState<string>('');
@@ -48,6 +59,13 @@ const PrescriptionForm: React.FC = () => {
 
   const [viewerOpen, setViewerOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  const [selectedPres, setSelectedPres] = useState<Prescription | null>(null);
+
+  const Show = false;
+
 
   const openViewer = (index: number) => {
     setCurrentImageIndex(index);
@@ -126,6 +144,11 @@ const PrescriptionForm: React.FC = () => {
         status: 'Final',
       };
 
+      // console.log(newPrescription);
+
+      return
+
+
       setLoading(true);
 
       const d = await apiPost(`${baseUrl}/prescription/`, formData);
@@ -197,6 +220,21 @@ const PrescriptionForm: React.FC = () => {
   };
 
   ////////////
+
+  useEffect(() => {
+    if (selectedPres) {
+      handlePrint();
+    }
+  }, [selectedPres]);
+
+  const handlePrintFun = () => {
+    const newPrescription: Prescription = {
+      ...(formData as Prescription),
+      status: 'Final',
+    };
+
+    setSelectedPres(newPrescription);
+  };
 
 
   return (
@@ -457,12 +495,23 @@ const PrescriptionForm: React.FC = () => {
                   <select
                     required
                     value={formData.patientId}
-                    onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
+                    onChange={(e) => {
+                      const patientId = e.target.value;
+
+                      setFormData({
+                        ...formData,
+                        patientId,
+                      });
+
+                      const p = patients?.find((p) => p?.id === patientId) || null
+
+                      setSelectedPatient(p);
+                    }}
                     className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 outline-none focus:ring-2 focus:ring-primary-500/20 transition-all font-medium"
                   >
                     <option value="">Choose Patient...</option>
-                    {patients.map(p => (
-                      <option key={p.id} value={p.id}>{p.name} ({p.id})</option>
+                    {patients?.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
                     ))}
                   </select>
                 </div>
@@ -472,7 +521,20 @@ const PrescriptionForm: React.FC = () => {
                   <select
                     required
                     value={formData.doctorId}
-                    onChange={(e) => setFormData({ ...formData, doctorId: e.target.value })}
+                    onChange={(e) => {
+                      const doctorId = e.target.value;
+
+                      setFormData({
+                        ...formData,
+                        doctorId,
+                      });
+
+                      const d = doctors?.find((d: any) => d.id === doctorId) || null
+
+                      setSelectedDoctor(
+                        d
+                      );
+                    }}
                     className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 outline-none focus:ring-2 focus:ring-primary-500/20 transition-all font-medium"
                   >
                     {doctors.map(d => (
@@ -504,14 +566,40 @@ const PrescriptionForm: React.FC = () => {
                       </div>
                       :
                       <>
-                        <FilePlus size={20} /> Finalize Prescription
+                        <FilePlus size={20} /> Save Prescription
                       </>
                   }
                 </button>
               </div>
+
+
+              {/* //// */}
+
+              <div className="  border-slate-100 dark:border-slate-800 space-y-3">
+                <button
+                  type='button'
+                  onClick={handlePrintFun}
+                  className="w-full     bg-sky-600
+        hover:bg-sky-700 text-white font-bold py-4 rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                >
+                  {
+                    loading ?
+                      <div className="w-full flex items-center justify-center animate-in fade-in duration-500">
+                        <Loader2 color={'#0ea5e9'} size={25} />
+                      </div>
+                      :
+                      <>
+                        <Printer size={20} /> Print Prescription
+                      </>
+                  }
+                </button>
+              </div>
+
+              {/* //// */}
+
             </div>
 
-            <div className="bg-emerald-50 dark:bg-emerald-900/10 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-800/30">
+            {/* <div className="bg-emerald-50 dark:bg-emerald-900/10 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-800/30">
               <p className="text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2">Cost Estimation</p>
               <div className="flex justify-between items-end">
                 <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Total Medicines:</p>
@@ -520,7 +608,7 @@ const PrescriptionForm: React.FC = () => {
                   {formData?.medicines?.reduce((sum, med) => sum + (med.unitPrice * med.quantity), 0).toFixed(2)}
                 </p>
               </div>
-            </div>
+            </div> */}
           </div>
         </form>
       </div>
@@ -529,13 +617,24 @@ const PrescriptionForm: React.FC = () => {
       {/* <ImageViewer image={xrayPreview} /> */}
       {/* )} */}
 
+      <PrintWrapper
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+      >
+        <div ref={printRef}>
+
+          <PrescriptionTemp1 display={false} patient={selectedPatient} doctor={selectedDoctor} prescription={selectedPres} />
+
+        </div>
+
+      </PrintWrapper>
+
     </>
-
-
-
-
-
   );
+
+
 };
 
 export default PrescriptionForm;

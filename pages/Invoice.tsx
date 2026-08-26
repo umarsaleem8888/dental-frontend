@@ -11,7 +11,10 @@ import {
     Receipt,
     ArrowLeft,
     View,
-    Eye
+    Eye,
+    LucideReceipt,
+    LucideReceiptIndianRupee,
+    LucideReceiptText
 } from 'lucide-react';
 import {
     addInvoice,
@@ -233,7 +236,7 @@ const Invoices: React.FC = () => {
                             to="/invoices/new"
                             className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg active:scale-95"
                         >
-                            <Receipt size={20} /> New Invoice
+                            <LucideReceiptText size={20} /> New Invoice
                         </Link>
 
                         : ''

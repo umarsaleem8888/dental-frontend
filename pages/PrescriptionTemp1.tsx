@@ -39,6 +39,7 @@ import LowerTeeth16 from '../images/svg/lower 16.svg';
 
 
 interface PrescriptionTempProps {
+    display: boolean;
     patient: any;
     doctor: any;
     prescription: any;
@@ -286,16 +287,19 @@ const Tooth: React.FC<SelectedTeethProps> = ({ teeth }) => {
 }
 
 const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
+    display,
     patient,
     doctor,
     prescription,
 }) => {
 
-    console.log(prescription?.selectedTeeth, 'pres');
+    // console.log(prescription?.selectedTeeth, 'pres');
 
 
     return (
-        <div>
+
+        <>  
+        <div className={`${display ? 'block' : 'hidden'} print:block`}>
 
             {/* <div className="bg-gradient-to-r from-slate-50 via-white to-slate-50 border-b border-slate-200 px-8 py-6"> */}
 
@@ -445,9 +449,9 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
                         <div className="min-h-[150px] p-2">
 
                             {
-                                prescription?.diagnosis ?
+                                prescription?.notes ?
                                     <p className='text-slate-600 text-[12px]' >
-                                        {prescription?.diagnosis}
+                                        {prescription?.notes}
                                     </p>
                                     :
                                     <NotFound text={'Clinic Diagnosis Details Not Found'} />
@@ -532,7 +536,7 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
                             {
                                 prescription?.diagnosis ?
                                     <p className='text-slate-600 text-[12px]' >
-                                        {prescription?.notes}
+                                        {prescription?.diagnosis}
                                     </p>
                                     :
                                     <NotFound text={'Clinic Notes Not Found'} />
@@ -827,6 +831,8 @@ const prescriptionTemp1: React.FC<PrescriptionTempProps> = ({
            </div>
 
         </div >
+        </>
+
     )
 }
 
